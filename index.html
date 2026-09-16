@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vita — health, all in one place</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF6F1; --bg2:#FBE9E1; --surface:#FFFFFF; --surface-2:#FDF3EE;
+  --ink:#3A3330; --ink-2:#8A7C74; --ink-3:#B7A99F;
+  --line:#F1E3DB; --line-2:#E8D6CB;
+  --primary:#EF7D5E; --primary-600:#E36847; --primary-soft:#FCE3DA;
+  --sage:#3E9C8C; --sage-600:#348476; --sage-soft:#DCF0EC;
+  --lav:#8C7BC4; --lav-soft:#ECE6F6;
+  --amber:#DF9330; --amber-soft:#FAEAD1;
+  --danger:#D6543F; --danger-soft:#FBDFD9;
+  --good:#4EA37C; --good-soft:#DDF0E6;
+  --shadow:0 2px 4px rgba(58,51,48,.04),0 14px 30px -14px rgba(58,51,48,.18);
+  --shadow-sm:0 1px 2px rgba(58,51,48,.05),0 8px 16px -12px rgba(58,51,48,.2);
+  --r:18px; --r-sm:12px; --r-lg:26px;
+  --font:'Nunito',ui-rounded,'Segoe UI',system-ui,sans-serif;
+  --display:'Fraunces',Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;font-size:15px}
+h1,h2,h3,h4{margin:0;font-weight:700}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink)}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2.5px solid var(--primary);outline-offset:1px}
+a{color:var(--sage-600)}
+svg{vertical-align:middle}
+::-webkit-scrollbar{height:10px;width:10px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:20px;border:2px solid var(--bg)}
+::selection{background:var(--primary-soft)}
+
+/* ---------- topbar ---------- */
+.topbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;
+  padding:12px 20px;background:rgba(255,246,241,.82);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:24px;letter-spacing:-.5px}
+.brand .dot{width:30px;height:30px;border-radius:10px;background:linear-gradient(140deg,var(--primary),#F2A57E);
+  display:grid;place-items:center;box-shadow:0 6px 14px -6px var(--primary)}
+.brand .dot svg{width:18px;height:18px;color:#fff}
+.brand small{font-family:var(--font);font-size:11px;font-weight:700;color:var(--ink-3);letter-spacing:.4px;text-transform:uppercase;margin-top:2px}
+.spacer{flex:1}
+.toggle{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px;gap:2px;box-shadow:var(--shadow-sm)}
+.toggle button{display:flex;align-items:center;gap:7px;padding:8px 15px;border-radius:999px;font-weight:700;font-size:13.5px;color:var(--ink-2);transition:.16s}
+.toggle button svg{width:16px;height:16px}
+.toggle button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
+.toggle button[data-view="doctor"][aria-selected="true"]{color:var(--sage-600)}
+.who{display:flex;align-items:center;gap:9px;padding:5px 12px 5px 6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow-sm)}
+.who .av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff}
+.who .meta{line-height:1.15}
+.who .meta b{font-size:13.5px}
+.who .meta span{display:block;font-size:11px;color:var(--ink-2);font-weight:600}
+@media(max-width:680px){.who .meta{display:none}.brand small{display:none}}
+
+/* ---------- layout ---------- */
+.app{display:grid;grid-template-columns:230px 1fr;gap:0;min-height:calc(100vh - 60px)}
+.side{padding:18px 12px;border-right:1px solid var(--line);position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.side .lbl{font-size:10.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-3);padding:6px 12px 8px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;font-weight:600;font-size:14px;color:var(--ink-2);width:100%;text-align:left;transition:.14s;position:relative}
+.nav button svg{width:19px;height:19px;flex:none}
+.nav button:hover{background:var(--surface-2);color:var(--ink)}
+.nav button[aria-current="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm);font-weight:700}
+.nav button[aria-current="true"] svg{color:var(--primary)}
+.doctor .nav button[aria-current="true"] svg{color:var(--sage)}
+.nav .bdg{margin-left:auto;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--primary);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.main{padding:26px 30px 60px;max-width:1020px;width:100%}
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  .side{position:sticky;top:60px;height:auto;border-right:none;border-bottom:1px solid var(--line);
+    padding:8px;display:flex;gap:6px;overflow-x:auto}
+  .side .lbl{display:none}
+  .nav{flex-direction:row;gap:6px}
+  .nav button{flex-direction:column;gap:4px;padding:8px 12px;font-size:11px;min-width:70px;text-align:center;border-radius:14px}
+  .nav .bdg{position:absolute;top:4px;right:10px;margin:0}
+  .main{padding:20px 16px 80px}
+}
+
+/* ---------- primitives ---------- */
+.page-head{margin-bottom:22px}
+.page-head h1{font-family:var(--display);font-weight:500;font-size:30px;letter-spacing:-.5px}
+.page-head p{color:var(--ink-2);margin:5px 0 0;font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow-sm);padding:18px}
+.card.pad-lg{padding:22px}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:760px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.muted{color:var(--ink-2)}
+.tiny{font-size:12px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.sec-title{font-size:12.5px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--ink-3);margin:26px 0 12px}
+.sec-title:first-child{margin-top:0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 15px;border-radius:11px;font-weight:700;font-size:13.5px;transition:.15s;border:1px solid transparent}
+.btn svg{width:16px;height:16px}
+.btn-primary{background:var(--primary);color:#fff;box-shadow:0 6px 14px -6px var(--primary)}
+.btn-primary:hover{background:var(--primary-600)}
+.btn-sage{background:var(--sage);color:#fff;box-shadow:0 6px 14px -6px var(--sage)}
+.btn-sage:hover{background:var(--sage-600)}
+.btn-ghost{background:var(--surface-2);color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{background:var(--bg2)}
+.btn-quiet{background:transparent;color:var(--ink-2);padding:7px 10px}
+.btn-quiet:hover{background:var(--surface-2);color:var(--ink)}
+.btn-sm{padding:7px 12px;font-size:12.5px;border-radius:9px}
+.btn:disabled{opacity:.5;cursor:default;box-shadow:none}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700}
+.pill.primary{background:var(--primary-soft);color:var(--primary-600)}
+.pill.sage{background:var(--sage-soft);color:var(--sage-600)}
+.pill.lav{background:var(--lav-soft);color:var(--lav)}
+.pill.amber{background:var(--amber-soft);color:#B4741A}
+.pill.danger{background:var(--danger-soft);color:var(--danger)}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.grey{background:var(--surface-2);color:var(--ink-2)}
+.dot-i{width:7px;height:7px;border-radius:50%;background:currentColor}
+
+.av{border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field label{font-size:12.5px;font-weight:700;color:var(--ink-2)}
+.inp{width:100%;padding:10px 12px;border:1px solid var(--line-2);border-radius:11px;background:var(--surface);transition:.15s}
+.inp:hover{border-color:var(--ink-3)}
+textarea.inp{resize:vertical;min-height:70px;line-height:1.5}
+.divide{height:1px;background:var(--line);margin:16px 0}
+
+.list-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.list-row:last-child{border-bottom:none}
+.progress{height:7px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.progress i{display:block;height:100%;border-radius:99px;background:var(--sage)}
+.progress.low i{background:var(--amber)}
+.progress.crit i{background:var(--danger)}
+
+.flag{display:flex;gap:11px;padding:12px 14px;border-radius:13px;align-items:flex-start}
+.flag.high{background:var(--danger-soft)}
+.flag.moderate{background:var(--amber-soft)}
+.flag .fi{width:22px;height:22px;flex:none;border-radius:7px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;margin-top:1px}
+.flag.high .fi{background:var(--danger)}
+.flag.moderate .fi{background:var(--amber)}
+.flag b{font-weight:800}
+
+.banner{display:flex;gap:12px;align-items:flex-start;background:linear-gradient(120deg,var(--sage-soft),#EAF6F2);
+  border:1px solid #CDE8E1;border-radius:var(--r);padding:14px 16px;margin-bottom:20px}
+.banner .bi{width:30px;height:30px;border-radius:9px;background:var(--sage);color:#fff;display:grid;place-items:center;flex:none}
+.banner .bi svg{width:17px;height:17px}
+.banner button.x{margin-left:auto;color:var(--sage-600)}
+
+/* messaging */
+.msg-wrap{display:grid;grid-template-columns:250px 1fr;gap:0;height:560px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+@media(max-width:760px){.msg-wrap{grid-template-columns:1fr;height:auto}.msg-list.hide-mobile{display:none}}
+.msg-list{border-right:1px solid var(--line);overflow-y:auto;background:var(--surface-2)}
+.thread{display:flex;gap:10px;align-items:center;padding:13px 14px;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.thread:hover{background:var(--bg2)}
+.thread[aria-current="true"]{background:var(--surface)}
+.thread .tinfo{min-width:0;flex:1}
+.thread .tinfo b{display:block;font-size:13.5px}
+.thread .tinfo span{font-size:12px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.msg-panel{display:flex;flex-direction:column;min-height:0}
+.msg-head{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px}
+.msg-body{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:9px;background:var(--bg)}
+.bubble{max-width:74%;padding:10px 13px;border-radius:15px;font-size:14px;line-height:1.45;box-shadow:var(--shadow-sm)}
+.bubble.them{align-self:flex-start;background:var(--surface);border-bottom-left-radius:5px}
+.bubble.me{align-self:flex-end;background:var(--primary);color:#fff;border-bottom-right-radius:5px}
+.doctor .bubble.me{background:var(--sage)}
+.bubble .t{display:block;font-size:10.5px;opacity:.7;margin-top:4px;font-weight:600}
+.msg-compose{display:flex;gap:9px;padding:12px;border-top:1px solid var(--line);background:var(--surface)}
+.msg-compose .inp{flex:1}
+
+/* chart */
+.chart-wrap{width:100%;overflow-x:auto}
+.chart-wrap svg{display:block;width:100%;height:auto;min-width:420px}
+.metric-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.metric-pills button{padding:7px 14px;border-radius:999px;font-weight:700;font-size:13px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2)}
+.metric-pills button[aria-current="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.stat{background:var(--surface-2);border-radius:14px;padding:13px 15px}
+.stat b{display:block;font-family:var(--display);font-size:24px;font-weight:500;letter-spacing:-.5px}
+.stat span{font-size:12px;color:var(--ink-2);font-weight:700}
+
+/* toast */
+.toast-host{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);z-index:90;display:flex;flex-direction:column;gap:10px;align-items:center;pointer-events:none}
+.toast{display:flex;align-items:center;gap:11px;background:var(--ink);color:#fff;padding:12px 17px;border-radius:14px;
+  box-shadow:0 16px 40px -12px rgba(0,0,0,.4);font-weight:600;font-size:14px;animation:pop .28s cubic-bezier(.2,.9,.3,1.2)}
+.toast .ti{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;flex:none}
+.toast.sync .ti{background:var(--primary)}
+.toast.ok .ti{background:var(--good)}
+.toast small{display:block;font-weight:600;opacity:.7;font-size:11.5px}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+
+/* modal */
+.modal-back{position:fixed;inset:0;background:rgba(58,51,48,.4);backdrop-filter:blur(3px);z-index:80;display:grid;place-items:center;padding:20px;animation:fade .2s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal{background:var(--surface);border-radius:var(--r-lg);box-shadow:0 30px 70px -20px rgba(0,0,0,.4);width:100%;max-width:440px;padding:24px;animation:pop .26s}
+.modal h3{font-family:var(--display);font-weight:500;font-size:22px;margin-bottom:4px}
+.modal .close{position:absolute;top:16px;right:16px}
+
+/* telehealth */
+.tele{position:fixed;inset:0;z-index:85;background:#2A2320;display:flex;flex-direction:column;animation:fade .2s}
+.tele-top{padding:14px 20px;display:flex;align-items:center;gap:12px;color:#fff}
+.tele-main{flex:1;display:grid;grid-template-columns:1fr 320px;gap:16px;padding:0 20px 20px;min-height:0}
+@media(max-width:820px){.tele-main{grid-template-columns:1fr}}
+.tele-video{background:linear-gradient(160deg,#4a4038,#332b26);border-radius:var(--r);position:relative;display:grid;place-items:center;overflow:hidden}
+.tele-video .big-av{width:120px;height:120px;border-radius:50%;display:grid;place-items:center;font-size:44px;font-weight:800;color:#fff;background:var(--sage)}
+.tele-video .self{position:absolute;bottom:14px;right:14px;width:120px;height:82px;border-radius:12px;background:#5a4f46;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;border:2px solid rgba(255,255,255,.2)}
+.tele-chart{background:var(--surface);border-radius:var(--r);padding:18px;overflow-y:auto}
+.tele-controls{display:flex;gap:12px;justify-content:center;padding:8px 0 4px}
+.tele-controls button{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.14);color:#fff}
+.tele-controls button svg{width:22px;height:22px}
+.tele-controls button.end{background:var(--danger);width:auto;padding:0 22px;border-radius:26px;font-weight:700;gap:8px}
+
+.doc-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--sage-soft);color:var(--sage-600);font-size:11.5px;font-weight:800}
+.empty{text-align:center;padding:40px 20px;color:var(--ink-2)}
+.empty svg{width:40px;height:40px;color:var(--ink-3);margin-bottom:8px}
+.hint{font-size:12px;color:var(--ink-3);font-weight:600;margin-top:8px}
+.kbd{font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-weight:700}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="dot" id="brandDot"></span>
+    <span>Vita<br><small>direct care, all in one</small></span>
+  </div>
+  <div class="spacer"></div>
+  <div class="toggle" role="tablist" aria-label="Switch view">
+    <button role="tab" data-view="patient" data-action="set-view" aria-selected="true"><span id="ic-user"></span>Patient</button>
+    <button role="tab" data-view="doctor" data-action="set-view" aria-selected="false"><span id="ic-steth"></span>Doctor</button>
+  </div>
+  <div class="who" id="whoChip"></div>
+</header>
+
+<div id="patient-app">
+  <div class="app">
+    <aside class="side"><div class="lbl">Maya's Vita</div><nav class="nav" id="patient-nav"></nav></aside>
+    <main class="main" id="patient-main"></main>
+  </div>
+</div>
+
+<div id="doctor-app" class="doctor" hidden>
+  <div class="app">
+    <aside class="side"><div class="lbl">Dr. Reyes · Cedar Direct Care</div><nav class="nav" id="doctor-nav"></nav></aside>
+    <main class="main" id="doctor-main"></main>
+  </div>
+</div>
+
+<div class="toast-host" id="toastHost"></div>
+<div id="modalHost"></div>
+<div id="teleHost"></div>
+
+<script>
+/* ============================ ICONS ============================ */
+const P={
+  home:'<path d="M3 11.4 12 4l9 7.4"/><path d="M5 10.2V20h5v-6h4v6h5v-9.8"/>',
+  chat:'<path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.6 8.6 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5Z"/>',
+  cal:'<rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M16 2.5v4M8 2.5v4M3 9.5h18"/>',
+  clip:'<rect x="5" y="4" width="14" height="17" rx="2.5"/><rect x="9" y="2.5" width="6" height="3.5" rx="1.2"/><path d="M8.5 11h7M8.5 15h5"/>',
+  pill:'<path d="M10.6 3.6 3.6 10.6a5 5 0 0 0 7 7l7-7a5 5 0 0 0-7-7Z"/><path d="M7.1 7.1 14 14"/>',
+  card:'<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20"/>',
+  folder:'<path d="M3 7.5a2 2 0 0 1 2-2h3.6l2 2H19a2 2 0 0 1 2 2v7.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',
+  chart:'<path d="M4 4v16h16"/><path d="M7.5 14l3.2-3.4 3 2 4.8-5.8"/>',
+  leaf:'<path d="M20 4C9 4 4 8.5 4 13.5A6.5 6.5 0 0 0 10.5 20C15.5 20 20 15 20 4Z"/><path d="M4.5 19.5 12 12"/>',
+  spark:'<path d="M12 3l1.7 4.6L18.3 9l-4.6 1.4L12 15l-1.7-4.6L5.7 9l4.6-1.4z"/><path d="M18 14.5l.8 2.1 2.2.8-2.2.8-.8 2.1-.8-2.1-2.2-.8 2.2-.8z"/>',
+  video:'<rect x="2" y="6" width="14" height="12" rx="2.5"/><path d="M16 10.2 22 7v10l-6-3.2z"/>',
+  edit:'<path d="M4 20h4.5L20 8.5 15.5 4 4 15.5z"/><path d="M13.8 5.7 18.3 10.2"/>',
+  grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>',
+  users:'<circle cx="9" cy="8" r="3.4"/><path d="M2.6 20a6.4 6.4 0 0 1 12.8 0"/><path d="M16.5 4.9a3.4 3.4 0 0 1 0 6.6"/><path d="M18.4 20a6.4 6.4 0 0 0-3-5.3"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/>',
+  steth:'<path d="M5 3v6a5 5 0 0 0 10 0V3"/><path d="M5 3H3.2M15 3h1.8"/><path d="M10 14.6V16a5.4 5.4 0 0 0 10.8 0v-1.2"/><circle cx="20.8" cy="12.4" r="2"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  check:'<path d="M4 12.5l5 5L20 6.5"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  send:'<path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/>',
+  refill:'<path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.5 3.5v5h-5"/>',
+  dl:'<path d="M12 3.5v11M7.5 10 12 14.5 16.5 10"/><path d="M4.5 20.5h15"/>',
+  bell:'<path d="M6 9.5a6 6 0 0 1 12 0c0 4.5 2 5.8 2 5.8H4s2-1.3 2-5.8Z"/><path d="M10 20a2.2 2.2 0 0 0 4 0"/>',
+  heart:'<path d="M12 20.5 4.5 13a4.7 4.7 0 0 1 7.5-5.5 4.7 4.7 0 0 1 7.5 5.5Z"/>',
+  drop:'<path d="M12 3.5S6 10 6 14.2A6 6 0 0 0 18 14.2C18 10 12 3.5 12 3.5Z"/>',
+  shoe:'<path d="M4 8l1 4 12 4a3 3 0 0 0 3-3l-2-8-5 1-3-1-4 2Z"/>',
+  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5Z"/>',
+  doc:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M14 3v5h5"/>',
+  clock:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 1.6"/>',
+  scale:'<path d="M12 3v3"/><rect x="4.5" y="6" width="15" height="14" rx="3"/><path d="M8.5 13h7"/>',
+  info:'<circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>',
+  cam:'<rect x="2" y="6" width="14" height="12" rx="2.5"/><path d="M16 10.2 22 7v10l-6-3.2z"/>',
+  ring:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="6.4" r="1.9"/><circle cx="6.6" cy="15" r="1.9"/><circle cx="17.4" cy="15" r="1.9"/>',
+  link:'<path d="M9.5 14.5 14.5 9.5"/><path d="M11 6.5l1-1a4 4 0 0 1 5.7 5.7l-1 1"/><path d="M13 17.5l-1 1a4 4 0 0 1-5.7-5.7l1-1"/>',
+  shield:'<path d="M12 3l7 3v5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  cross:'<path d="M9.5 3h5v6.5H21v5h-6.5V21h-5v-6.5H3v-5h6.5z"/>',
+  phone:'<path d="M4.5 4h4l1.8 4.6-2.3 1.4a11 11 0 0 0 5 5l1.4-2.3L19 20v.5A2.5 2.5 0 0 1 16.5 23 16 16 0 0 1 1 7.5 2.5 2.5 0 0 1 3.5 5z"/>',
+  lotus:'<path d="M12 21c-4 0-7-2.4-7-6 2 0 3.4.8 4.4 1.8M12 21c4 0 7-2.4 7-6-2 0-3.4.8-4.4 1.8M12 21c-2 0-3.2-2-3.2-4.6C8.8 13 12 11 12 11s3.2 2 3.2 5.4C15.2 19 14 21 12 21Z"/>'
+};
+function icon(n,cls){return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'+(cls?' class="'+cls+'"':'')+'>'+(P[n]||'')+'</svg>';}
+
+/* ============================ HELPERS ============================ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=n=>'$'+Number(n).toFixed(2);
+const now=()=>{const d=new Date();let h=d.getHours(),m=d.getMinutes();const ap=h>=12?'PM':'AM';h=h%12||12;return h+':'+String(m).padStart(2,'0')+' '+ap;};
+function fmtDate(iso){const d=new Date(iso+'T00:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
+function daysUntil(iso){return Math.round((new Date(iso+'T00:00:00')-new Date(new Date().toDateString()))/86400000);}
+let _uid=100;const uid=p=>(p||'id')+(++_uid);
+const avatarColors={reyes:'#3E9C8C',lindqvist:'#5C7CB8',anand:'#C08457',alvarez:'#8C7BC4',haddad:'#4EA37C',kim:'#D6543F',maya:'#EF7D5E',david:'#5C7CB8',aisha:'#8C7BC4',tom:'#4EA37C'};
+
+/* ============================ DATA ============================ */
+const state={
+  ui:{view:'patient',patientTab:'home',doctorTab:'today',selectedPatientId:'maya',msgThread:'reyes',drThread:'maya',trendMetric:'weight',bannerP:true,bannerD:true},
+  badges:{home:0,circle:0,messages:0,schedule:0,records:0,medications:0,billing:0,documents:0,trends:0,supplements:0,connections:0,emergency:0,assistant:0},
+  patient:{
+    id:'maya',name:'Maya Chen',age:29,dob:'1996-04-12',mrn:'VITA-10428',
+    allergies:['Penicillin (hives)'],
+    conditions:['Atrial fibrillation','Seasonal allergic rhinitis'],
+    pharmacy:{name:'Birch & Main Pharmacy',addr:'214 Main St, Andover'},
+    payment:'Visa ···· 4021',
+    doctors:[
+      {id:'reyes',name:'Dr. Marisol Reyes',specialty:'Direct Primary Care',initials:'MR'},
+      {id:'lindqvist',name:'Dr. Theo Lindqvist',specialty:'Cardiology',initials:'TL'},
+      {id:'anand',name:'Dr. Priya Anand',specialty:'Dermatology',initials:'PA'}
+    ],
+    notes:[
+      {id:'n1',doctorId:'lindqvist',doctor:'Dr. Theo Lindqvist',date:'2026-05-18',type:'Cardiology follow-up',
+        s:'Occasional palpitations, improved since starting metoprolol. No chest pain or fainting. Taking warfarin as directed.',
+        o:'BP 121/78, HR 62 regular. Weight 137.5 lb. INR 2.4 (in range).',
+        a:'Atrial fibrillation — rate-controlled and anticoagulated. Stable.',
+        p:'Continue metoprolol 25 mg twice daily and warfarin 5 mg nightly. Repeat INR in 4 weeks. Echo stable.'},
+      {id:'n2',doctorId:'reyes',doctor:'Dr. Marisol Reyes',date:'2026-03-02',type:'Membership annual visit',
+        s:'Feeling well. Occasional seasonal allergies. Wants to improve sleep and hydration.',
+        o:'BP 124/80, HR 63. Exam unremarkable. BMI in healthy range.',
+        a:'Healthy adult; AFib co-managed with cardiology; allergic rhinitis.',
+        p:'Cetirizine as needed. Added hydration + evening BP widgets to Vita. Ordered lipid panel + CBC.'}
+    ],
+    meds:[
+      {id:'m1',name:'Warfarin',dose:'5 mg',schedule:'1 tablet — evening, with food',prescriber:'Dr. Theo Lindqvist',reason:'Atrial fibrillation',supply:30,daysLeft:6,self:false,refilling:false},
+      {id:'m2',name:'Metoprolol',dose:'25 mg',schedule:'1 tablet — morning & evening',prescriber:'Dr. Theo Lindqvist',reason:'Heart rate control',supply:60,daysLeft:23,self:false,refilling:false},
+      {id:'m3',name:'Cetirizine',dose:'10 mg',schedule:'1 tablet — as needed for allergies',prescriber:'Self-added (OTC)',reason:'Seasonal allergies',supply:30,daysLeft:41,self:true,refilling:false}
+    ],
+    messages:{
+      reyes:[
+        {sender:'doctor',text:'Hi Maya! Your lipid panel looked great — nothing to worry about.',time:'Mon 9:12 AM'},
+        {sender:'patient',text:'Thank you! Should I keep taking the cetirizine daily or only when needed?',time:'Mon 9:40 AM'},
+        {sender:'doctor',text:'As-needed is perfect. If you find you\u2019re using it most days, message me and we\u2019ll revisit.',time:'Mon 9:52 AM'}
+      ],
+      lindqvist:[
+        {sender:'doctor',text:'Your INR came back at 2.4 — right in range. Keep the warfarin dose the same.',time:'May 18 4:05 PM'},
+        {sender:'patient',text:'Great, thanks Dr. Lindqvist!',time:'May 18 4:20 PM'}
+      ],
+      anand:[
+        {sender:'patient',text:'Hi Dr. Anand — I\u2019d like a skin check for a mole on my shoulder.',time:'Apr 28 1:10 PM'},
+        {sender:'doctor',text:'Of course. Grab any open slot on the schedule and we\u2019ll take a look.',time:'Apr 28 2:02 PM'}
+      ]
+    },
+    widgets:[
+      {id:'w1',kind:'drop',title:'Hydration',by:'You',value:'5 / 8 cups',sub:'Keep going!'},
+      {id:'w2',kind:'shoe',title:'Steps today',by:'Fitbit Charge',value:'7,320',sub:'Goal 8,000'},
+      {id:'w3',kind:'heart',title:'Evening BP check',by:'Dr. Reyes',value:'Log tonight',sub:'Around 8 PM'}
+    ],
+    billing:[
+      {id:'b1',desc:'Vita membership — June',doctor:'Dr. Marisol Reyes',amount:99,due:'2026-06-01',status:'due'},
+      {id:'b2',desc:'Cardiology follow-up',doctor:'Dr. Theo Lindqvist',amount:45,due:'2026-06-10',status:'due'},
+      {id:'b3',desc:'Lab panel — lipid + CBC',doctor:'Dr. Marisol Reyes',amount:28,due:'2026-05-20',status:'paid'}
+    ],
+    documents:[
+      {id:'d1',name:'Lipid panel + CBC',type:'Lab result',date:'2026-05-15',source:'Dr. Marisol Reyes'},
+      {id:'d2',name:'Echocardiogram report',type:'Imaging',date:'2026-04-30',source:'Dr. Theo Lindqvist'},
+      {id:'d3',name:'Immunization record',type:'Immunization',date:'2026-01-04',source:'Andover Health Dept.'},
+      {id:'d4',name:'TSH + metabolic panel',type:'Lab result',date:'2025-11-12',source:'Dr. Marisol Reyes'}
+    ],
+    trends:{
+      weight:{label:'Weight',unit:'lb',color:'var(--primary)',pts:[{t:'Jan',v:141,src:'manual'},{t:'Feb',v:140,src:'manual'},{t:'Mar',v:139,src:'ehr'},{t:'Apr',v:138.2,src:'manual'},{t:'May',v:137.5,src:'ehr'}]},
+      bp:{label:'Blood pressure',unit:'mmHg',color:'var(--danger)',pts:[{t:'Jan',v:128,v2:82,src:'ehr'},{t:'Feb',v:126,v2:81,src:'manual'},{t:'Mar',v:124,v2:80,src:'ehr'},{t:'Apr',v:122,v2:79,src:'manual'},{t:'May',v:121,v2:78,src:'ehr'}]},
+      hr:{label:'Resting HR',unit:'bpm',color:'var(--sage)',pts:[{t:'Jan',v:65,src:'wearable'},{t:'Feb',v:64,src:'wearable'},{t:'Mar',v:63,src:'wearable'},{t:'Apr',v:62,src:'wearable'},{t:'May',v:61,src:'wearable'}]},
+      steps:{label:'Steps / day',unit:'avg',color:'var(--lav)',pts:[{t:'Jan',v:6800,src:'wearable'},{t:'Feb',v:7100,src:'wearable'},{t:'Mar',v:7600,src:'wearable'},{t:'Apr',v:8000,src:'wearable'},{t:'May',v:8300,src:'wearable'}]},
+      bone:{label:'Bone density (T)',unit:'T-score',color:'var(--amber)',pts:[{t:'2024',v:-0.3,src:'ehr'},{t:'2025',v:-0.2,src:'ehr'},{t:'2026',v:-0.1,src:'ehr'}]}
+    },
+    supplements:[
+      {id:'s1',name:'Vitamin D3',dose:'2000 IU — daily',purpose:'Bone & immune support'},
+      {id:'s2',name:'Magnesium glycinate',dose:'200 mg — nightly',purpose:'Sleep & muscle relaxation'},
+      {id:'s3',name:"St. John's Wort",dose:'300 mg — twice daily',purpose:'Mood support'},
+      {id:'s4',name:'Turmeric / Curcumin',dose:'500 mg — daily',purpose:'Anti-inflammatory'}
+    ],
+    appts:[
+      {id:'a1',doctorId:'reyes',doctor:'Dr. Marisol Reyes',type:'Membership check-in',date:'2026-06-05',time:'9:30 AM',mode:'Telehealth'},
+      {id:'a2',doctorId:'anand',doctor:'Dr. Priya Anand',type:'Skin check',date:'2026-06-12',time:'2:00 PM',mode:'In-person'}
+    ],
+    aiChat:[{sender:'ai',text:'Hi Maya — I\u2019m Vita, your health guide. I can explain a note or bill, summarize your meds, or look up a supplement. I won\u2019t diagnose you, but I\u2019ll always point you to Dr. Reyes when that\u2019s the right call.'}],
+    careCircle:{open:false,messages:[]},
+    tcm:[
+      {id:'t1',name:'Dang Gui (Angelica sinensis)',kind:'herb',detail:'Blood tonic — 2 capsules daily'},
+      {id:'t2',name:'Reishi mushroom',kind:'herb',detail:'Immune support — tea, nightly'},
+      {id:'t3',name:'Acupuncture',kind:'practice',detail:'Weekly — stress & sleep'}
+    ],
+    habits:{
+      meditation:[{d:'Mon',v:5},{d:'Tue',v:10},{d:'Wed',v:20},{d:'Thu',v:15},{d:'Fri',v:25},{d:'Sat',v:30},{d:'Sun',v:22}],
+      sleep:[{d:'Mon',v:6.3},{d:'Tue',v:6.7},{d:'Wed',v:7.5},{d:'Thu',v:7.1},{d:'Fri',v:7.7},{d:'Sat',v:8.2},{d:'Sun',v:7.9}]
+    },
+    dailyLog:[
+      {id:'l1',date:'Today',type:'Meditation',value:'22 min',icon:'lotus'},
+      {id:'l2',date:'Today',type:'Sleep',value:'7.9 hrs',icon:'moon'},
+      {id:'l3',date:'Yesterday',type:'Exercise',value:'35 min yoga',icon:'shoe'},
+      {id:'l4',date:'Yesterday',type:'Mood',value:'Calm',icon:'heart'},
+      {id:'l5',date:'Yesterday',type:'Water',value:'7 cups',icon:'drop'}
+    ],
+    bloodType:'O positive',
+    organDonor:true,
+    criticalWarning:'Takes warfarin (blood thinner) — high bleeding risk. Avoid NSAIDs such as ibuprofen.',
+    emergencyContacts:[
+      {id:'ec1',name:'Daniel Chen',relation:'Brother',phone:'(617) 555-0142'},
+      {id:'ec2',name:'Dr. Marisol Reyes',relation:'Primary care physician',phone:'(978) 555-0170'}
+    ],
+    emergencyAccess:true
+  },
+  doctor:{id:'reyes',name:'Dr. Marisol Reyes',specialty:'Direct Primary Care',practice:'Cedar Direct Care',initials:'MR'},
+  panel:[
+    {id:'maya',name:'Maya Chen',age:29,reason:'Membership check-in',time:'9:30 AM',mode:'Telehealth',live:true},
+    {id:'david',name:'David Whitfield',age:54,reason:'Hypertension follow-up',time:'10:15 AM',mode:'In-person'},
+    {id:'aisha',name:'Aisha Rahman',age:37,reason:'New patient intake',time:'11:00 AM',mode:'In-person'},
+    {id:'tom',name:'Tom Delgado',age:61,reason:'Diabetes management',time:'1:30 PM',mode:'Telehealth'}
+  ],
+  drThreads:{
+    david:[{sender:'patient',text:'My morning readings have been around 138/86 this week.',time:'Yesterday'},{sender:'doctor',text:'Thanks David — let\u2019s recheck at your visit and adjust if needed.',time:'Yesterday'}],
+    aisha:[{sender:'patient',text:'Looking forward to my intake! Anything I should bring?',time:'2 days ago'}],
+    tom:[{sender:'doctor',text:'Your last A1c was 6.9 — nice improvement. Keep it up.',time:'Last week'}]
+  }
+};
+
+/* searchable directory for booking */
+const DIRECTORY=[
+  {id:'reyes',name:'Dr. Marisol Reyes',specialty:'Direct Primary Care',practice:'Cedar Direct Care',slots:['Mon Jun 8 · 9:00 AM','Wed Jun 10 · 2:30 PM','Fri Jun 12 · 11:00 AM']},
+  {id:'alvarez',name:'Dr. Nina Alvarez',specialty:'Nutrition & Lifestyle',practice:'Rooted Health',slots:['Tue Jun 9 · 10:00 AM','Thu Jun 11 · 3:00 PM']},
+  {id:'haddad',name:'Dr. Omar Haddad',specialty:'Sleep Medicine',practice:'Restwell Clinic',slots:['Mon Jun 8 · 1:00 PM','Fri Jun 12 · 9:30 AM']},
+  {id:'kim',name:'Dr. Grace Kim',specialty:'Endocrinology',practice:'Beacon Endocrine',slots:['Wed Jun 10 · 8:30 AM','Thu Jun 11 · 1:15 PM']},
+  {id:'lindqvist',name:'Dr. Theo Lindqvist',specialty:'Cardiology',practice:'Northshore Heart',slots:['Tue Jun 9 · 11:30 AM','Fri Jun 12 · 2:00 PM']}
+];
+
+/* supplement research mini-database */
+const SUPP_DB={
+  'vitamin d':{does:'Supports bone health, immune function, and mood. Made in skin from sunlight.',dose:'1,000–2,000 IU daily for most adults.',caution:'Very high doses can raise blood calcium. Pair testing with your DPC doctor.'},
+  'magnesium':{does:'Involved in muscle relaxation, nerve function, and sleep quality.',dose:'200–400 mg daily; glycinate form is gentle on the stomach.',caution:'Can cause loose stools; may interact with some antibiotics.'},
+  "st. john's wort":{does:'Traditionally used for low mood.',dose:'300 mg standardized extract, up to 3× daily.',caution:'Interacts with MANY drugs — including warfarin and antidepressants. Check with your doctor first.'},
+  'turmeric':{does:'Curcumin has anti-inflammatory and antioxidant properties.',dose:'500–1,000 mg curcumin daily, often with black pepper.',caution:'High doses may increase bleeding risk with blood thinners like warfarin.'},
+  'ashwagandha':{does:'Adaptogen used for stress and sleep.',dose:'300–600 mg standardized extract daily.',caution:'May affect thyroid meds and sedatives.'},
+  'melatonin':{does:'Hormone that signals sleep timing; used for jet lag and insomnia.',dose:'0.5–3 mg 30–60 min before bed.',caution:'Can cause grogginess; may interact with blood thinners.'},
+  'fish oil':{does:'Omega-3s support heart and brain health.',dose:'1,000–2,000 mg combined EPA/DHA daily.',caution:'High doses may increase bleeding risk with warfarin.'},
+  'ginkgo':{does:'Traditionally used for memory and circulation.',dose:'120–240 mg standardized extract daily.',caution:'Increases bleeding risk, especially with warfarin or aspirin.'}
+};
+
+/* interaction rules */
+const RULES=[
+  {a:'warfarin',b:'ibuprofen',sev:'high',note:'Increased risk of bleeding.'},
+  {a:'warfarin',b:'aspirin',sev:'high',note:'Increased risk of bleeding.'},
+  {a:'warfarin',b:'naproxen',sev:'high',note:'Increased risk of bleeding.'},
+  {a:'warfarin',b:"st. john's wort",sev:'high',note:"St. John's Wort can weaken warfarin, raising clot risk."},
+  {a:'warfarin',b:'ginkgo',sev:'moderate',note:'May increase bleeding risk.'},
+  {a:'warfarin',b:'fish oil',sev:'moderate',note:'High doses may increase bleeding risk.'},
+  {a:'warfarin',b:'turmeric',sev:'moderate',note:'High-dose curcumin may increase bleeding risk.'},
+  {a:'sertraline',b:"st. john's wort",sev:'high',note:'Risk of serotonin syndrome.'},
+  {a:'metoprolol',b:'verapamil',sev:'moderate',note:'Can slow the heart rate too much.'},
+  {a:'simvastatin',b:'clarithromycin',sev:'high',note:'Raised risk of muscle injury.'},
+  {a:'warfarin',b:'dang gui',sev:'moderate',note:'Dang Gui (Angelica) may increase bleeding risk.'},
+  {a:'warfarin',b:'angelica',sev:'moderate',note:'Angelica may increase bleeding risk.'},
+  {a:'warfarin',b:'dong quai',sev:'moderate',note:'Dong Quai may increase bleeding risk.'},
+  {a:'warfarin',b:'ginseng',sev:'moderate',note:'Ginseng may alter how warfarin works.'}
+];
+function checkInteractions(){
+  const items=[...state.patient.meds.map(m=>({name:m.name,kind:'medication'})),
+               ...state.patient.supplements.map(s=>({name:s.name,kind:'supplement'})),
+               ...((state.patient.tcm||[]).filter(t=>t.kind==='herb').map(t=>({name:t.name,kind:'TCM herb'})))];
+  const out=[];const seen=new Set();
+  for(let i=0;i<items.length;i++)for(let j=i+1;j<items.length;j++){
+    const x=items[i].name.toLowerCase(),y=items[j].name.toLowerCase();
+    for(const r of RULES){
+      const hit=(x.includes(r.a)&&y.includes(r.b))||(x.includes(r.b)&&y.includes(r.a));
+      if(hit){const key=[items[i].name,items[j].name].sort().join('|');if(!seen.has(key)){seen.add(key);
+        out.push({sev:r.sev,note:r.note,a:items[i].name,b:items[j].name});}}
+    }
+  }
+  return out.sort((p,q)=>p.sev==='high'?-1:1);
+}
+
+/* ============================ CHART ============================ */
+function chart(series,unit){
+  const w=560,h=210,L=40,R=16,T=16,B=30;
+  let all=[];series.forEach(s=>s.pts.forEach(p=>{all.push(p.v);if(p.v2!=null)all.push(p.v2);}));
+  let min=Math.min(...all),max=Math.max(...all);const pad=(max-min||1)*0.18;min-=pad;max+=pad;
+  const n=series[0].pts.length;
+  const X=i=>L+(n<=1?(w-L-R)/2:i*(w-L-R)/(n-1));
+  const Y=v=>T+(1-(v-min)/(max-min||1))*(h-T-B);
+  let g='';for(let k=0;k<=3;k++){const val=max-(k*(max-min)/3);const y=T+k*(h-T-B)/3;
+    g+='<line x1="'+L+'" y1="'+y+'" x2="'+(w-R)+'" y2="'+y+'" stroke="var(--line)"/>'+
+       '<text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" font-size="10" font-weight="700" fill="var(--ink-3)">'+(Math.round(val*10)/10)+'</text>';}
+  let xl='';series[0].pts.forEach((p,i)=>{xl+='<text x="'+X(i)+'" y="'+(h-8)+'" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink-2)">'+esc(p.t)+'</text>';});
+  let paths='';
+  series.forEach((s,si)=>{
+    const col=si===0?s.color:'var(--ink-3)';
+    const key=si===0?'v':'v2';
+    let d='',dots='',area='';
+    s.pts.forEach((p,i)=>{const val=si===0?p.v:p.v2;if(val==null)return;const x=X(i),y=Y(val);d+=(i?'L':'M')+x+' '+y+' ';});
+    if(si===0){const first=X(0),last=X(n-1);area='<path d="'+d+'L'+last+' '+(h-B)+' L'+first+' '+(h-B)+' Z" fill="'+col+'" opacity="0.09"/>';}
+    s.pts.forEach((p,i)=>{const val=si===0?p.v:p.v2;if(val==null)return;const x=X(i),y=Y(val);
+      dots+='<circle cx="'+x+'" cy="'+y+'" r="'+(si===0?4:3)+'" fill="var(--surface)" stroke="'+col+'" stroke-width="'+(si===0?2.5:2)+'"/>';});
+    paths+=area+'<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="'+(si===0?2.6:1.8)+'" stroke-linecap="round" stroke-linejoin="round" '+(si?'stroke-dasharray="4 4"':'')+'/>'+dots;
+  });
+  return '<div class="chart-wrap"><svg viewBox="0 0 '+w+' '+h+'" role="img">'+g+paths+xl+'</svg></div>';
+}
+
+/* ============================ NAV CONFIG ============================ */
+const PNAV=[['home','Home','home'],['circle','Care Circle','ring'],['messages','Messages','chat'],['schedule','Schedule','cal'],['records','Records','clip'],['medications','Medications','pill'],['supplements','Wellness log','leaf'],['trends','Trends','chart'],['connections','Connections','link'],['billing','Billing','card'],['documents','Documents','folder'],['emergency','Emergency','shield'],['assistant','Vita AI','spark']];
+const DNAV=[['today','Today','users'],['messages','Messages','chat'],['circle','Care Circle','ring'],['telehealth','Telehealth','video'],['chart','Patient chart','clip'],['note','SOAP note','edit'],['prescribe','Prescribe','pill'],['widgets','Widgets','grid'],['billing','Billing','card']];
+
+const DPATIENTS={
+  david:{name:'David Whitfield',age:54,mrn:'VITA-10552',allergies:['None on file'],conditions:['Hypertension'],meds:[{name:'Lisinopril',dose:'20 mg',schedule:'1 tablet — morning'}],vitals:'BP 138/86 · HR 74 · Wt 198 lb',notes:[{doctor:'Dr. Marisol Reyes',date:'2026-04-20',type:'BP follow-up',s:'Home readings mildly elevated this month.',o:'BP 138/86 in clinic.',a:'Hypertension — needs adjustment.',p:'Increase lisinopril; recheck in 4 weeks.'}]},
+  aisha:{name:'Aisha Rahman',age:37,mrn:'VITA-10560',allergies:['Sulfa drugs'],conditions:['New patient — none established'],meds:[],vitals:'Pending intake',notes:[]},
+  tom:{name:'Tom Delgado',age:61,mrn:'VITA-10501',allergies:['None on file'],conditions:['Type 2 diabetes'],meds:[{name:'Metformin',dose:'1000 mg',schedule:'1 tablet — twice daily'}],vitals:'BP 128/80 · HR 70 · A1c 6.9%',notes:[{doctor:'Dr. Marisol Reyes',date:'2026-05-02',type:'Diabetes management',s:'Feeling well, watching diet.',o:'A1c 6.9% (down from 7.4%).',a:'Type 2 diabetes — improving.',p:'Continue metformin; recheck A1c in 3 months.'}]}
+};
+const lt=k=>state.patient.trends[k].pts[state.patient.trends[k].pts.length-1];
+
+/* ============================ SMALL BUILDERS ============================ */
+function av(id,initials,size){size=size||36;const c=avatarColors[id]||'var(--sage)';return '<span class="av" style="width:'+size+'px;height:'+size+'px;font-size:'+(size*0.4)+'px;background:'+c+'">'+esc(initials)+'</span>';}
+function docById(id){return state.patient.doctors.find(d=>d.id===id)||{name:'',initials:'',specialty:''};}
+function bubbles(list,viewer){
+  return list.map(m=>{
+    const mine=viewer==='patient'?m.sender==='patient':m.sender==='doctor';
+    return '<div class="bubble '+(mine?'me':'them')+'">'+esc(m.text)+'<span class="t">'+esc(m.time||'')+'</span></div>';
+  }).join('');
+}
+function toast(title,sub,kind){
+  const host=$('toastHost');const el=document.createElement('div');
+  el.className='toast '+(kind||'ok');
+  el.innerHTML='<span class="ti">'+icon(kind==='sync'?'send':(kind==='warn'?'bell':'check'))+'</span><div><div>'+esc(title)+'</div>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>';
+  if(kind==='warn')el.style.background='var(--danger)';
+  host.appendChild(el);setTimeout(()=>{el.style.transition='.3s';el.style.opacity='0';el.style.transform='translateY(10px)';setTimeout(()=>el.remove(),320);},2800);
+}
+function openModal(html){$('modalHost').innerHTML='<div class="modal-back" data-action="modal-back"><div class="modal" style="position:relative">'+html+'</div></div>';}
+function closeModal(){$('modalHost').innerHTML='';}
+function bump(tab){if(state.ui.view==='patient'&&state.ui.patientTab===tab)return;state.badges[tab]=(state.badges[tab]||0)+1;}
+
+/* ============================ TOP / NAV ============================ */
+function renderTop(){
+  const isP=state.ui.view==='patient';
+  const who=isP?{id:'maya',initials:'MC',name:state.patient.name,sub:'Patient · '+state.patient.age+' yrs'}
+              :{id:'reyes',initials:'MR',name:state.doctor.name,sub:state.doctor.practice};
+  $('whoChip').innerHTML=av(who.id,who.initials,32)+'<div class="meta"><b>'+esc(who.name)+'</b><span>'+esc(who.sub)+'</span></div>';
+  document.querySelectorAll('.toggle button').forEach(b=>b.setAttribute('aria-selected',b.dataset.view===state.ui.view));
+}
+function renderNav(){
+  const isP=state.ui.view==='patient';
+  const cfg=isP?PNAV:DNAV;const cur=isP?state.ui.patientTab:state.ui.doctorTab;const act=isP?'p-nav':'d-nav';
+  const html=cfg.map(([tab,label,ic])=>{
+    const b=isP&&state.badges[tab]?'<span class="bdg">'+state.badges[tab]+'</span>':'';
+    return '<button data-action="'+act+'" data-tab="'+tab+'" aria-current="'+(cur===tab)+'">'+icon(ic)+'<span>'+label+'</span>'+b+'</button>';
+  }).join('');
+  $(isP?'patient-nav':'doctor-nav').innerHTML=html;
+}
+
+/* ============================ MASTER RENDER ============================ */
+function render(){
+  renderTop();renderNav();
+  $('patient-app').hidden=state.ui.view!=='patient';
+  $('doctor-app').hidden=state.ui.view!=='doctor';
+  if(state.ui.view==='patient'){$('patient-main').innerHTML=patientTab();}
+  else{$('doctor-main').innerHTML=doctorTab();}
+  afterRender();
+}
+function afterRender(){
+  const b=document.querySelector((state.ui.view==='patient'?'#patient-main':'#doctor-main')+' .msg-body');
+  if(b)b.scrollTop=b.scrollHeight;
+  const ai=$('aiScroll');if(ai)ai.scrollTop=ai.scrollHeight;
+}
+function head(h1,p){return '<div class="page-head"><h1>'+h1+'</h1>'+(p?'<p>'+p+'</p>':'')+'</div>';}
+function stat(ic,label,big,sub){return '<div class="card" style="padding:16px"><div class="row" style="gap:10px;margin-bottom:8px"><span style="width:30px;height:30px;border-radius:9px;background:var(--surface-2);display:grid;place-items:center;color:var(--primary)">'+icon(ic)+'</span><span class="tiny muted" style="font-weight:700">'+label+'</span></div><div style="font-family:var(--display);font-size:24px;font-weight:500;letter-spacing:-.5px">'+big+'</div>'+(sub?'<div class="tiny muted" style="font-weight:600;margin-top:2px">'+sub+'</div>':'')+'</div>';}
+function soapRow(l,t){return '<div style="display:flex;gap:10px;padding:7px 0;border-top:1px solid var(--line)"><span class="pill sage" style="align-self:flex-start;min-width:24px;justify-content:center">'+l+'</span><span style="flex:1">'+esc(t)+'</span></div>';}
+
+/* ============================ PATIENT TABS ============================ */
+function patientTab(){
+  switch(state.ui.patientTab){
+    case 'home':return pHome();case 'messages':return pMessages();case 'schedule':return pSchedule();
+    case 'records':return pRecords();case 'medications':return pMeds();case 'billing':return pBilling();
+    case 'documents':return pDocs();case 'trends':return pTrends();case 'supplements':return pSupp();
+    case 'circle':return pCircle();case 'connections':return pConnections();case 'emergency':return pEmergency();
+    case 'assistant':return pAI();
+  }
+}
+function pHome(){
+  const p=state.patient;
+  const nextAppt=[...p.appts].sort((a,b)=>a.date<b.date?-1:1)[0];
+  const refill=[...p.meds].sort((a,b)=>a.daysLeft-b.daysLeft)[0];
+  const due=p.billing.filter(b=>b.status==='due').reduce((s,b)=>s+b.amount,0);
+  const banner=state.ui.bannerP?'<div class="banner"><span class="bi">'+icon('info')+'</span><div><b>This is a clickable demo.</b> Flip between <b>Patient</b> and <b>Doctor</b> up top. When Dr. Reyes writes a note, prescribes a med, messages you, adds a widget, or bills you on the doctor side, it appears right here.</div><button class="x" data-action="dismiss-banner-p" aria-label="Dismiss">'+icon('x')+'</button></div>':'';
+  const sums='<div class="grid g4" style="margin-bottom:22px">'+
+    stat('cal','Next visit',nextAppt?fmtDate(nextAppt.date):'—',nextAppt?nextAppt.time+' · '+nextAppt.mode:'')+
+    stat('pill','Refill soon',refill.name,refill.daysLeft+' days of supply left')+
+    stat('card','Balance due',money(due),p.billing.filter(b=>b.status==='due').length+' open charges')+
+    stat('shoe','Steps today','7,320','Goal 8,000 · Fitbit')+'</div>';
+  const wid='<div class="between"><div class="sec-title" style="margin:0">Your widgets</div><span class="hint">From Dr. Reyes + ones you build</span></div>'+
+    '<div class="grid g3" style="margin-top:12px">'+p.widgets.map(widgetCard).join('')+addWidgetCard()+'</div>';
+  return head('Good morning, Maya','Here\u2019s your health at a glance.')+banner+sums+wid;
+}
+function widgetCard(w){
+  const colors={drop:'var(--sage)',shoe:'var(--lav)',heart:'var(--primary)',pill:'var(--primary-600)',spark:'var(--lav)',moon:'#5C7CB8',clock:'var(--amber)'};
+  const c=colors[w.kind]||'var(--sage)';
+  return '<div class="card" style="padding:16px;position:relative">'+
+    (w.by!=='You'?'<span class="pill sage" style="position:absolute;top:12px;right:12px;font-size:10.5px">'+esc(w.by)+'</span>':'<button class="btn-quiet btn-sm" style="position:absolute;top:8px;right:8px;padding:4px" data-action="pt-remove-widget" data-id="'+w.id+'" aria-label="Remove">'+icon('x')+'</button>')+
+    '<span style="width:34px;height:34px;border-radius:10px;background:'+c+';color:#fff;display:grid;place-items:center;margin-bottom:10px">'+icon(w.kind)+'</span>'+
+    '<div style="font-weight:700;font-size:13px;color:var(--ink-2)">'+esc(w.title)+'</div>'+
+    '<div style="font-family:var(--display);font-size:22px;font-weight:500;margin:2px 0">'+esc(w.value)+'</div>'+
+    '<div class="tiny muted" style="font-weight:600">'+esc(w.sub||'')+'</div></div>';
+}
+function addWidgetCard(){
+  return '<div class="card" style="padding:16px;border-style:dashed;background:var(--surface-2)">'+
+    '<div style="font-weight:800;font-size:13px;margin-bottom:10px">'+icon('plus')+' Build a widget</div>'+
+    '<div class="field" style="margin-bottom:8px"><select class="inp" id="pt-w-kind"><option value="drop">Hydration</option><option value="shoe">Steps goal</option><option value="moon">Sleep goal</option><option value="heart">BP check-in</option><option value="clock">Fasting timer</option></select></div>'+
+    '<div class="field" style="margin-bottom:10px"><input class="inp" id="pt-w-label" placeholder="Label (e.g. Water — 8 cups)"></div>'+
+    '<button class="btn btn-primary btn-sm" style="width:100%" data-action="pt-add-widget">Add to my dashboard</button></div>';
+}
+function pMessages(){
+  const p=state.patient;const cur=state.ui.msgThread;
+  const list=p.doctors.map(d=>{const th=p.messages[d.id]||[];const last=th[th.length-1];
+    return '<button class="thread" data-action="pt-open-thread" data-thread="'+d.id+'" aria-current="'+(cur===d.id)+'">'+av(d.id,d.initials,38)+'<div class="tinfo"><b>'+esc(d.name)+'</b><span>'+esc(last?last.text:'')+'</span></div></button>';}).join('');
+  const d=docById(cur);const th=p.messages[cur]||[];
+  return head('Messages','One inbox for every doctor.')+
+    '<div class="msg-wrap"><div class="msg-list">'+list+'</div>'+
+    '<div class="msg-panel"><div class="msg-head">'+av(cur,d.initials,34)+'<div><b>'+esc(d.name)+'</b><div class="tiny muted" style="font-weight:600">'+esc(d.specialty)+'</div></div></div>'+
+    '<div class="msg-body">'+bubbles(th,'patient')+'</div>'+
+    '<div class="msg-compose"><input class="inp" id="pt-msg-input" placeholder="Message '+esc(d.name.split(' ').slice(-1))+'…"><button class="btn btn-primary" data-action="pt-send">'+icon('send')+'</button></div></div></div>';
+}
+function pSchedule(){
+  const p=state.patient;
+  const up=[...p.appts].sort((a,b)=>a.date<b.date?-1:1);
+  const upHtml=up.length?up.map(a=>'<div class="card" style="padding:15px 17px;margin-bottom:12px"><div class="between"><div class="row">'+av(a.doctorId,docById(a.doctorId).initials||'DR',40)+'<div><b>'+esc(a.type)+'</b><div class="tiny muted" style="font-weight:600">'+esc(a.doctor)+'</div></div></div><div style="text-align:right"><div style="font-weight:800">'+fmtDate(a.date)+'</div><div class="tiny muted" style="font-weight:700">'+esc(a.time)+'</div></div></div><div class="between" style="margin-top:12px"><span class="pill '+(a.mode==='Telehealth'?'lav':'sage')+'">'+icon(a.mode==='Telehealth'?'video':'user')+esc(a.mode)+'</span><button class="btn-quiet btn-sm" data-action="appt-cancel" data-id="'+a.id+'">Cancel</button></div></div>').join(''):'<div class="empty">'+icon('cal')+'<div>No upcoming visits yet.</div></div>';
+  const q=(state.ui.bookQuery||'').toLowerCase();
+  const results=DIRECTORY.filter(d=>!q||d.name.toLowerCase().includes(q)||d.specialty.toLowerCase().includes(q));
+  const dir=results.map(d=>{
+    const open=state.ui.bookOpen===d.id;
+    const slots=open?'<div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">'+d.slots.map(s=>'<button class="btn btn-sage btn-sm" data-action="book-slot" data-id="'+d.id+'" data-slot="'+esc(s)+'">'+esc(s)+'</button>').join('')+'</div>':'';
+    return '<div class="card" style="padding:14px 16px;margin-bottom:10px"><div class="between"><div class="row">'+av(d.id,d.name.split(' ')[1][0]+d.name.split(' ')[2][0],38)+'<div><b>'+esc(d.name)+'</b><div class="tiny muted" style="font-weight:600">'+esc(d.specialty)+' · '+esc(d.practice)+'</div></div></div><button class="btn '+(open?'btn-ghost':'btn-primary')+' btn-sm" data-action="book-pick" data-id="'+d.id+'">'+(open?'Hide times':'See times')+'</button></div>'+slots+'</div>';
+  }).join('');
+  return head('Schedule','Your upcoming visits, and a place to book new ones.')+
+    '<div class="sec-title">Upcoming visits</div>'+upHtml+
+    '<div class="sec-title">Book a new visit</div>'+
+    '<div class="card" style="padding:16px"><div class="row" style="gap:10px"><span style="color:var(--ink-3)">'+icon('search')+'</span><input class="inp" id="pt-doc-search" placeholder="Search by name or specialty (try \u201cnutrition\u201d, \u201csleep\u201d…)" value="'+esc(state.ui.bookQuery||'')+'"></div></div>'+
+    '<div style="margin-top:14px">'+(dir||'<div class="empty">No doctors match that search.</div>')+'</div>';
+}
+function pRecords(){
+  const p=state.patient;const w=lt('weight'),bp=lt('bp'),hr=lt('hr');
+  const summary='<div class="grid g3" style="margin-bottom:20px">'+
+    '<div class="card"><div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Allergies</div>'+p.allergies.map(a=>'<span class="pill danger" style="margin:2px 4px 2px 0">'+esc(a)+'</span>').join('')+'</div>'+
+    '<div class="card"><div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Conditions</div>'+p.conditions.map(a=>'<span class="pill grey" style="margin:2px 4px 2px 0">'+esc(a)+'</span>').join('')+'</div>'+
+    '<div class="card"><div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Latest vitals</div><div style="font-weight:700;line-height:1.7">BP '+bp.v+'/'+bp.v2+' · HR '+hr.v+' bpm<br>Weight '+w.v+' lb</div></div></div>';
+  const notes=p.notes.map(n=>'<div class="card" style="margin-bottom:14px"><div class="between" style="margin-bottom:12px"><div class="row">'+av(n.doctorId,docById(n.doctorId).initials||'DR',36)+'<div><b>'+esc(n.type)+'</b><div class="tiny muted" style="font-weight:600">'+esc(n.doctor)+'</div></div></div><span class="pill grey">'+fmtDate(n.date)+'</span></div>'+soapRow('S',n.s)+soapRow('O',n.o)+soapRow('A',n.a)+soapRow('P',n.p)+'</div>').join('');
+  return head('Records','Your chart and every visit note, from all your doctors.')+summary+'<div class="sec-title">Visit notes</div>'+notes;
+}
+function pMeds(){
+  const p=state.patient;const flags=checkInteractions();
+  const flagHtml=flags.length?'<div class="stack" style="margin-bottom:20px">'+flags.map(f=>'<div class="flag '+f.sev+'"><span class="fi">'+(f.sev==='high'?'!':'i')+'</span><div><b>'+esc(f.a)+' + '+esc(f.b)+'</b> — '+esc(f.note)+' <span class="tiny" style="opacity:.8">('+f.sev+' priority)</span></div></div>').join('')+'</div>':'<div class="card" style="margin-bottom:20px;background:var(--good-soft);border-color:#BFE6D2"><div class="row"><span style="color:var(--good)">'+icon('check')+'</span><b>No dangerous interactions across your meds &amp; supplements.</b></div></div>';
+  const cards=p.meds.map(m=>{
+    const pct=Math.max(4,Math.min(100,Math.round(m.daysLeft/m.supply*100)));
+    const cls=m.daysLeft<=7?'crit':(m.daysLeft<=14?'low':'');
+    const refillBtn=m.refilling?'<button class="btn btn-ghost btn-sm" disabled>'+icon('check')+'Refill requested</button>':'<button class="btn btn-primary btn-sm" data-action="pt-refill" data-id="'+m.id+'">'+icon('refill')+'Refill now</button>';
+    return '<div class="card" style="margin-bottom:14px"><div class="between"><div><div class="row" style="gap:8px"><b style="font-size:16px">'+esc(m.name)+'</b><span class="pill grey">'+esc(m.dose)+'</span>'+(m.self?'<span class="pill lav">Self-added</span>':'')+'</div><div class="tiny muted" style="font-weight:700;margin-top:4px">'+icon('clock')+' '+esc(m.schedule)+'</div><div class="tiny muted" style="font-weight:600;margin-top:2px">Prescribed by '+esc(m.prescriber)+' · for '+esc(m.reason)+'</div></div></div><div class="divide"></div><div class="between"><div style="flex:1;max-width:260px"><div class="between" style="margin-bottom:5px"><span class="tiny" style="font-weight:800">'+m.daysLeft+' days left</span><span class="tiny muted" style="font-weight:700">'+esc(p.pharmacy.name)+'</span></div><div class="progress '+cls+'"><i style="width:'+pct+'%"></i></div></div>'+refillBtn+'</div></div>';
+  }).join('');
+  const addForm=state.ui.showAddMed?'<div class="card" style="border-style:dashed;background:var(--surface-2)"><b>Add a medication you take</b><div class="grid g2" style="margin-top:12px"><div class="field"><label>Name</label><input class="inp" id="pt-med-name" placeholder="e.g. Ibuprofen"></div><div class="field"><label>Dose</label><input class="inp" id="pt-med-dose" placeholder="e.g. 200 mg"></div></div><div class="field"><label>Schedule</label><input class="inp" id="pt-med-sched" placeholder="e.g. as needed for pain"></div><div class="row"><button class="btn btn-primary btn-sm" data-action="pt-add-med">Add medication</button><button class="btn btn-quiet btn-sm" data-action="pt-toggle-addmed">Cancel</button></div></div>':'<button class="btn btn-ghost" data-action="pt-toggle-addmed">'+icon('plus')+'Add a medication I take</button>';
+  return head('Medications','Everything you take, refills, and automatic interaction checks.')+flagHtml+cards+'<div style="margin-top:6px">'+addForm+'</div>';
+}
+function pBilling(){
+  const p=state.patient;const due=p.billing.filter(b=>b.status==='due').reduce((s,b)=>s+b.amount,0);
+  const rows=[...p.billing].sort((a,b)=>a.status==='due'?-1:1).map(b=>'<div class="card" style="padding:15px 17px;margin-bottom:12px"><div class="between"><div><b>'+esc(b.desc)+'</b><div class="tiny muted" style="font-weight:600;margin-top:2px">'+esc(b.doctor)+' · due '+fmtDate(b.due)+'</div></div><div style="text-align:right"><div style="font-family:var(--display);font-size:20px;font-weight:500">'+money(b.amount)+'</div>'+(b.status==='paid'?'<span class="pill good">'+icon('check')+'Paid</span>':'<button class="btn btn-primary btn-sm" data-action="pt-pay" data-id="'+b.id+'" style="margin-top:4px">Pay now</button>')+'</div></div></div>').join('');
+  return head('Billing','Every charge across your doctors, in one clear place.')+
+    '<div class="card" style="background:linear-gradient(120deg,var(--primary-soft),#FDEEE7);border-color:#F6D6C9;margin-bottom:20px"><div class="between"><div><div class="tiny" style="font-weight:800;color:var(--primary-600);text-transform:uppercase;letter-spacing:.5px">Balance due</div><div style="font-family:var(--display);font-size:34px;font-weight:500">'+money(due)+'</div></div><div class="tiny muted" style="font-weight:700;text-align:right">Paying with<br><b style="color:var(--ink)">'+esc(p.payment)+'</b></div></div></div>'+rows;
+}
+function pDocs(){
+  const p=state.patient;
+  const cards=p.documents.map(d=>'<div class="card" style="padding:16px"><div class="row" style="gap:10px;margin-bottom:10px"><span style="width:38px;height:38px;border-radius:10px;background:var(--sage-soft);color:var(--sage-600);display:grid;place-items:center;flex:none">'+icon('doc')+'</span><div style="min-width:0"><b style="display:block;overflow:hidden;text-overflow:ellipsis">'+esc(d.name)+'</b><span class="tiny muted" style="font-weight:600">'+esc(d.type)+'</span></div></div><div class="tiny muted" style="font-weight:600;margin-bottom:12px">'+fmtDate(d.date)+' · '+esc(d.source)+'</div><div class="row" style="gap:6px"><button class="btn btn-ghost btn-sm" data-action="doc-view" data-id="'+d.id+'">View</button><button class="btn btn-ghost btn-sm" data-action="doc-download" data-id="'+d.id+'">'+icon('dl')+'</button><button class="btn btn-sage btn-sm" data-action="doc-share" data-id="'+d.id+'">'+icon('send')+'Send</button></div></div>').join('');
+  return head('Documents','Labs, imaging, immunizations — ready to view, download, or send anywhere.')+
+    '<div class="between" style="margin-bottom:16px"><span class="hint">Send to any provider, even one not on Vita.</span><button class="btn btn-primary btn-sm" data-action="doc-upload">'+icon('plus')+'Upload document</button></div>'+
+    '<div class="grid g3">'+cards+'</div>';
+}
+function pTrends(){
+  const p=state.patient;const key=state.ui.trendMetric;const T=p.trends[key];
+  const pills=Object.entries(p.trends).map(([k,v])=>'<button data-action="trend-metric" data-metric="'+k+'" aria-current="'+(k===key)+'">'+esc(v.label)+'</button>').join('');
+  const series=key==='bp'?[{color:T.color,pts:T.pts},{color:'var(--ink-3)',pts:T.pts}]:[{color:T.color,pts:T.pts}];
+  const first=T.pts[0].v,last=T.pts[T.pts.length-1].v;const delta=Math.round((last-first)*10)/10;
+  const avg=Math.round(T.pts.reduce((s,x)=>s+x.v,0)/T.pts.length*10)/10;
+  const stats='<div class="grid g3" style="margin:18px 0"><div class="stat"><b>'+last+(key==='bp'?'/'+T.pts[T.pts.length-1].v2:'')+'</b><span>Latest '+esc(T.unit)+'</span></div><div class="stat"><b style="color:'+(delta<=0?'var(--good)':'var(--primary-600)')+'">'+(delta>0?'+':'')+delta+'</b><span>Change since '+esc(T.pts[0].t)+'</span></div><div class="stat"><b>'+avg+'</b><span>Average</span></div></div>';
+  return head('Trends','Weight, blood pressure, wearables and more — plotted automatically.')+
+    '<div class="metric-pills">'+pills+'</div>'+
+    '<div class="card">'+chart(series,T.unit)+'<div class="row" style="gap:16px;margin-top:8px;justify-content:center;flex-wrap:wrap"><span class="tiny muted" style="font-weight:700"><span class="dot-i" style="background:'+T.color+';display:inline-block;margin-right:5px"></span>'+esc(T.label)+(key==='bp'?' (systolic)':'')+'</span>'+(key==='bp'?'<span class="tiny muted" style="font-weight:700"><span class="dot-i" style="background:var(--ink-3);display:inline-block;margin-right:5px"></span>Diastolic</span>':'')+'</div>'+stats+
+    '<div class="divide"></div><div class="row" style="gap:10px;flex-wrap:wrap"><input class="inp" id="pt-reading" placeholder="Add a reading ('+esc(T.unit)+')" style="max-width:240px"><button class="btn btn-primary btn-sm" data-action="pt-add-reading">'+icon('plus')+'Add reading</button><span class="hint" style="margin:0">Points also appear when your doctor or wearable adds them.</span></div></div>';
+}
+function pSupp(){
+  const p=state.patient;const flags=checkInteractions();
+  const flagHtml=flags.length?'<div class="stack" style="margin-bottom:20px">'+flags.map(f=>'<div class="flag '+f.sev+'"><span class="fi">'+(f.sev==='high'?'!':'i')+'</span><div><b>'+esc(f.a)+' + '+esc(f.b)+'</b> — '+esc(f.note)+'</div></div>').join('')+'</div>':'';
+  const items=p.supplements.map(s=>'<div class="list-row"><span style="width:34px;height:34px;border-radius:10px;background:var(--sage-soft);color:var(--sage-600);display:grid;place-items:center;flex:none">'+icon('leaf')+'</span><div style="flex:1"><b>'+esc(s.name)+'</b><div class="tiny muted" style="font-weight:600">'+esc(s.dose)+' · '+esc(s.purpose)+'</div></div><button class="btn-quiet btn-sm" data-action="pt-remove-supp" data-id="'+s.id+'">'+icon('x')+'</button></div>').join('');
+  const addForm=state.ui.showAddSupp?'<div style="margin-top:12px" class="grid g2"><div class="field" style="margin:0"><input class="inp" id="pt-supp-name" placeholder="Name (e.g. Ashwagandha)"></div><div class="field" style="margin:0"><input class="inp" id="pt-supp-dose" placeholder="Dose (e.g. 300 mg daily)"></div><div class="row" style="grid-column:1/-1"><button class="btn btn-primary btn-sm" data-action="pt-add-supp">Add supplement</button><button class="btn btn-quiet btn-sm" data-action="pt-toggle-addsupp">Cancel</button></div></div>':'<button class="btn btn-ghost btn-sm" style="margin-top:12px" data-action="pt-toggle-addsupp">'+icon('plus')+'Add a supplement</button>';
+  const res=state.ui.suppResult;
+  const tcmItems=p.tcm.map(t=>'<div class="list-row"><span style="width:34px;height:34px;border-radius:10px;background:'+(t.kind==='herb'?'var(--amber-soft);color:#B4741A':'var(--lav-soft);color:var(--lav)')+';display:grid;place-items:center;flex:none">'+icon(t.kind==='herb'?'leaf':'lotus')+'</span><div style="flex:1"><b>'+esc(t.name)+'</b> '+(t.kind==='herb'?'<span class="pill amber" style="font-size:10px">herb</span>':'<span class="pill lav" style="font-size:10px">practice</span>')+'<div class="tiny muted" style="font-weight:600">'+esc(t.detail)+'</div></div><button class="btn-quiet btn-sm" data-action="remove-tcm" data-id="'+t.id+'">'+icon('x')+'</button></div>').join('');
+  const tcmForm=state.ui.showAddTcm?'<div style="margin-top:12px" class="grid g3"><div class="field" style="margin:0"><input class="inp" id="tcm-name" placeholder="Name (e.g. Ginseng)"></div><div class="field" style="margin:0"><select class="inp" id="tcm-kind"><option value="herb">Herb / formula</option><option value="practice">Practice</option></select></div><div class="field" style="margin:0"><input class="inp" id="tcm-detail" placeholder="Detail (e.g. daily tea)"></div><div class="row" style="grid-column:1/-1"><button class="btn btn-primary btn-sm" data-action="add-tcm">Add to TCM log</button><button class="btn btn-quiet btn-sm" data-action="toggle-addtcm">Cancel</button></div></div>':'<button class="btn btn-ghost btn-sm" style="margin-top:12px" data-action="toggle-addtcm">'+icon('plus')+'Add TCM herb or practice</button>';
+  const dailyItems=p.dailyLog.map(l=>'<div class="list-row"><span style="width:32px;height:32px;border-radius:9px;background:var(--surface-2);color:var(--sage);display:grid;place-items:center;flex:none">'+icon(l.icon)+'</span><div style="flex:1"><b>'+esc(l.type)+'</b> — '+esc(l.value)+'</div><span class="pill grey">'+esc(l.date)+'</span></div>').join('');
+  const logForm='<div class="row" style="gap:8px;flex-wrap:wrap;margin-bottom:14px"><select class="inp" id="log-type" style="max-width:160px"><option value="Meditation">Meditation (min)</option><option value="Sleep">Sleep (hrs)</option><option value="Exercise">Exercise</option><option value="Water">Water (cups)</option><option value="Mood">Mood</option></select><input class="inp" id="log-value" placeholder="Value" style="max-width:150px"><button class="btn btn-sage btn-sm" data-action="pt-log-daily">'+icon('plus')+'Log today</button></div>';
+  const resHtml=res?'<div class="card" style="background:var(--surface-2);margin-top:14px"><b style="text-transform:capitalize;font-size:16px">'+esc(res.name)+'</b><div style="margin-top:8px;line-height:1.7"><div><b class="tiny" style="color:var(--sage-600)">WHAT IT DOES</b><br>'+esc(res.does)+'</div><div style="margin-top:8px"><b class="tiny" style="color:var(--sage-600)">TYPICAL DOSE</b><br>'+esc(res.dose)+'</div><div style="margin-top:8px"><b class="tiny" style="color:var(--danger)">CAUTION</b><br>'+esc(res.caution)+'</div></div></div>':(state.ui.suppSearched?'<div class="hint" style="margin-top:12px">No entry for that yet — try vitamin D, magnesium, turmeric, melatonin, fish oil, ginkgo, or ashwagandha.</div>':'');
+  return head('Wellness log','Supplements, Traditional Chinese Medicine, and your daily habits — all interaction-checked.')+flagHtml+
+    '<div class="sec-title">Supplements</div><div class="card">'+items+addForm+'</div>'+
+    '<div class="sec-title">Research a supplement</div><div class="card"><div class="row" style="gap:10px"><span style="color:var(--ink-3)">'+icon('search')+'</span><input class="inp" id="pt-supp-search" placeholder="Look up a supplement or herb…"><button class="btn btn-sage btn-sm" data-action="supp-research">Research</button></div>'+resHtml+'</div>'+
+    '<div class="sec-title">Traditional Chinese Medicine</div><div class="card">'+(tcmItems||'<div class="tiny muted">Nothing logged yet.</div>')+tcmForm+'</div>'+
+    '<div class="sec-title">Daily activities</div><div class="card">'+logForm+dailyItems+'<div class="hint" style="margin-top:8px">'+icon('link')+' Meditation and sleep feed your Connections tab automatically.</div></div>';
+}
+function pAI(){
+  const chips=['How many days of warfarin do I have left?','Explain my last cardiology note simply','What do I owe right now?','Is turmeric safe with my meds?','Do I have a heart problem?'];
+  const chatHtml=state.patient.aiChat.map(m=>'<div class="bubble '+(m.sender==='user'?'me':'them')+'" style="max-width:80%">'+esc(m.text).replace(/\n/g,'<br>')+'</div>').join('');
+  return head('Vita AI','Your health guide across every tab. It won\u2019t diagnose you.')+
+    '<div class="card" style="padding:0;overflow:hidden"><div id="aiScroll" style="padding:20px;display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;background:var(--bg)">'+chatHtml+'</div>'+
+    '<div style="padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap">'+chips.map(c=>'<button class="pill grey" style="cursor:pointer;border:1px solid var(--line)" data-action="ai-chip" data-q="'+esc(c)+'">'+esc(c)+'</button>').join('')+'</div>'+
+    '<div class="msg-compose"><input class="inp" id="pt-ai-input" placeholder="Ask Vita anything about your health…"><button class="btn btn-primary" data-action="ai-send">'+icon('send')+'</button></div></div>'+
+    '<div class="hint" style="margin-top:10px">'+icon('info')+' Vita never diagnoses. For symptoms or anything urgent, it\u2019ll point you to Dr. Reyes.</div>';
+}
+function botReply(text){
+  const q=text.toLowerCase();const p=state.patient;
+  const diag=['diagnos','do i have','what\u2019s wrong','whats wrong','is it cancer','am i having','should i be worried','why do i feel','why am i','what disease','is this serious','heart problem','heart attack','stroke'];
+  if(diag.some(k=>q.includes(k)))
+    return 'I can\u2019t diagnose you or tell you what a symptom means — that\u2019s exactly what Dr. Reyes is for, and she\u2019s quick to reach. Open the Messages tab and text Dr. Marisol Reyes; if it feels urgent, call 911. I\u2019m glad to help you word what you\u2019re noticing so the message is clear.';
+  if(q.includes('warfarin')||q.includes('how many days')||q.includes('refill')||q.includes('run out')||q.includes('medication')){
+    const m=[...p.meds].sort((a,b)=>a.daysLeft-b.daysLeft);
+    return 'Here\u2019s where your medications stand:\n'+m.map(x=>'• '+x.name+' ('+x.dose+') — '+x.daysLeft+' days left').join('\n')+'\nTap Refill now in the Medications tab and I\u2019ll send it to '+p.pharmacy.name+'.';
+  }
+  if(q.includes('interaction')||q.includes('safe with')||q.includes('turmeric')||q.includes('st john')||q.includes('st. john')){
+    const f=checkInteractions();
+    if(f.length)return 'Worth knowing about your current mix:\n'+f.map(x=>'• '+x.a+' + '+x.b+' — '+x.note).join('\n')+'\nI\u2019d run these by Dr. Reyes before changing anything.';
+    return 'Nothing in your current meds and supplements is flagging right now. Add something new and I\u2019ll re-check automatically.';
+  }
+  if(q.includes('bill')||q.includes('owe')||q.includes('pay')||q.includes('cost')||q.includes('charge')){
+    const due=p.billing.filter(b=>b.status==='due');
+    if(!due.length)return 'You\u2019re all paid up — no open charges right now.';
+    return 'You have '+due.length+' open charge'+(due.length>1?'s':'')+', totaling '+money(due.reduce((s,b)=>s+b.amount,0))+':\n'+due.map(b=>'• '+b.desc+' — '+money(b.amount)+', due '+fmtDate(b.due)).join('\n')+'\nPay any of them from the Billing tab with your '+p.payment+'.';
+  }
+  if(q.includes('appointment')||q.includes('next visit')||q.includes('schedule')||q.includes('book')){
+    const a=[...p.appts].sort((x,y)=>x.date<y.date?-1:1)[0];
+    return a?'Your next visit is '+a.type+' with '+a.doctor+' on '+fmtDate(a.date)+' at '+a.time+' ('+a.mode+'). Want another? The Schedule tab lets you search any doctor and grab a slot.':'You have no upcoming visits — head to Schedule to book one.';
+  }
+  if(q.includes('note')||q.includes('explain')||q.includes('simpl')||q.includes('understand')){
+    const n=p.notes[0];
+    return 'Here\u2019s '+n.doctor+'\u2019s '+n.type+' from '+fmtDate(n.date)+', in plain terms: your heart rhythm is well controlled on your current medicines, your blood-thinner level was right where it should be, and the plan is to keep everything the same and recheck in about a month. Nothing to worry about. Want me to help you write a follow-up question for '+n.doctor+'?';
+  }
+  if(q.includes('hello')||q.startsWith('hi')||q.includes('hey'))
+    return 'Hi Maya! I can pull anything from your tabs — meds, bills, visits, notes, supplements. What would help right now?';
+  return 'I can help you make sense of your meds, bills, notes, visits, and supplements — I can see all of them. I just won\u2019t diagnose symptoms; for that I\u2019ll send you to Dr. Reyes. Try one of the suggestions above, or ask me to explain something in a tab.';
+}
+
+/* ============================ DOCTOR TABS ============================ */
+function doctorTab(){
+  switch(state.ui.doctorTab){
+    case 'today':return dToday();case 'messages':return dMessages();case 'telehealth':return dTele();
+    case 'chart':return dChart();case 'note':return dNote();case 'prescribe':return dRx();
+    case 'widgets':return dWidgets();case 'billing':return dBilling();case 'circle':return dCircle();
+  }
+}
+function dInfo(id){return id==='maya'?{name:state.patient.name,age:state.patient.age,mrn:state.patient.mrn,allergies:state.patient.allergies,conditions:state.patient.conditions,meds:state.patient.meds,notes:state.patient.notes,vitals:'BP '+lt('bp').v+'/'+lt('bp').v2+' · HR '+lt('hr').v+' · Wt '+lt('weight').v+' lb',live:true}:Object.assign({live:false},DPATIENTS[id]);}
+function patientBar(){
+  const id=state.ui.selectedPatientId;const info=dInfo(id);
+  const opts=state.panel.map(pt=>'<option value="'+pt.id+'" '+(pt.id===id?'selected':'')+'>'+esc(pt.name)+' · '+pt.age+'</option>').join('');
+  return '<div class="card" style="padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">'+av(id,info.name.split(' ').map(x=>x[0]).join(''),38)+'<div style="flex:1;min-width:150px"><div class="tiny muted" style="font-weight:700">Viewing chart for</div><b style="font-size:16px">'+esc(info.name)+'</b> <span class="tiny muted">· '+info.mrn+'</span></div>'+(id==='maya'?'<span class="doc-badge">'+icon('spark')+'Live-synced to Patient view</span>':'')+'<select class="inp" data-action="dr-select-patient" style="max-width:190px" id="dr-patient-select">'+opts+'</select></div>';
+}
+function dToday(){
+  const banner=state.ui.bannerD?'<div class="banner" style="background:linear-gradient(120deg,#EAF6F2,var(--sage-soft));border-color:#CDE8E1"><span class="bi">'+icon('spark')+'</span><div><b>You\u2019re Dr. Reyes.</b> Open <b>Maya Chen</b>, then write a note, prescribe a med, add a widget, message, or bill her — flip to <b>Patient</b> up top and it\u2019s already there. Prescribing <b>Ibuprofen</b> even trips an interaction warning (she takes warfarin).</div><button class="x" data-action="dismiss-banner-d" aria-label="Dismiss">'+icon('x')+'</button></div>':'';
+  const stats='<div class="grid g3" style="margin-bottom:22px">'+
+    stat('users','Active patients',state.panel.length,'Direct primary care panel')+
+    stat('cal','Visits today',state.panel.length,'2 telehealth · 2 in-person')+
+    stat('chat','Unread messages','2','Across your panel')+'</div>';
+  const sched=state.panel.map(pt=>'<div class="card" style="padding:14px 16px;margin-bottom:11px"><div class="between"><div class="row">'+av(pt.id,pt.name.split(' ').map(x=>x[0]).join(''),40)+'<div><b>'+esc(pt.name)+'</b> <span class="tiny muted">· '+pt.age+'</span><div class="tiny muted" style="font-weight:600">'+esc(pt.reason)+'</div></div></div><div style="text-align:right"><div style="font-weight:800">'+esc(pt.time)+'</div><span class="pill '+(pt.mode==='Telehealth'?'lav':'sage')+'" style="margin-top:3px">'+esc(pt.mode)+'</span></div></div><div class="row" style="gap:8px;margin-top:12px">'+(pt.mode==='Telehealth'?'<button class="btn btn-sage btn-sm" data-action="dr-start-tele" data-id="'+pt.id+'">'+icon('video')+'Start visit</button>':'')+'<button class="btn btn-ghost btn-sm" data-action="dr-open-chart" data-id="'+pt.id+'">Open chart</button></div></div>').join('');
+  return head('Today · Dr. Reyes','Your schedule and patient panel at Cedar Direct Care.')+banner+stats+'<div class="sec-title">Today\u2019s schedule</div>'+sched;
+}
+function dMessages(){
+  const cur=state.ui.drThread;
+  const getTh=id=>id==='maya'?state.patient.messages.reyes:state.drThreads[id];
+  const list=state.panel.map(pt=>{const th=getTh(pt.id)||[];const last=th[th.length-1];return '<button class="thread" data-action="dr-open-thread" data-id="'+pt.id+'" aria-current="'+(cur===pt.id)+'">'+av(pt.id,pt.name.split(' ').map(x=>x[0]).join(''),38)+'<div class="tinfo"><b>'+esc(pt.name)+'</b><span>'+esc(last?last.text:'No messages yet')+'</span></div></button>';}).join('');
+  const cp=state.panel.find(p=>p.id===cur);const th=getTh(cur)||[];
+  return head('Messages','Secure messaging with patients — and routing from other EHRs.')+
+    '<div class="msg-wrap"><div class="msg-list">'+list+'</div><div class="msg-panel"><div class="msg-head">'+av(cur,cp.name.split(' ').map(x=>x[0]).join(''),34)+'<div><b>'+esc(cp.name)+'</b><div class="tiny muted" style="font-weight:600">'+(cur==='maya'?'Synced to Maya\u2019s Vita':esc(cp.reason))+'</div></div></div><div class="msg-body">'+bubbles(th,'doctor')+'</div><div class="msg-compose"><input class="inp" id="dr-msg-input" placeholder="Message '+esc(cp.name.split(' ')[0])+'…"><button class="btn btn-sage" data-action="dr-send-msg">'+icon('send')+'</button></div></div></div>';
+}
+function dTele(){
+  const tele=state.panel.filter(p=>p.mode==='Telehealth');
+  const rows=tele.map(pt=>'<div class="card" style="padding:14px 16px;margin-bottom:11px"><div class="between"><div class="row">'+av(pt.id,pt.name.split(' ').map(x=>x[0]).join(''),40)+'<div><b>'+esc(pt.name)+'</b><div class="tiny muted" style="font-weight:600">'+esc(pt.reason)+' · '+esc(pt.time)+'</div></div></div><button class="btn btn-sage btn-sm" data-action="dr-start-tele" data-id="'+pt.id+'">'+icon('video')+'Start visit</button></div></div>').join('');
+  return head('Telehealth','Start a visit and the patient\u2019s chart opens right beside the call.')+
+    '<div class="card" style="margin-bottom:16px;background:var(--sage-soft);border-color:#CDE8E1"><div class="row"><span style="color:var(--sage-600)">'+icon('info')+'</span>Telehealth runs inside Vita — no separate app, and the chart is one glance away.</div></div>'+
+    '<div class="sec-title">Today\u2019s telehealth visits</div>'+rows;
+}
+function dChart(){
+  const id=state.ui.selectedPatientId;const info=dInfo(id);
+  const meds=(info.meds&&info.meds.length)?info.meds.map(m=>'<div class="list-row"><span style="width:30px;height:30px;border-radius:9px;background:var(--primary-soft);color:var(--primary-600);display:grid;place-items:center;flex:none">'+icon('pill')+'</span><div><b>'+esc(m.name)+' '+esc(m.dose)+'</b><div class="tiny muted" style="font-weight:600">'+esc(m.schedule)+'</div></div></div>').join(''):'<div class="tiny muted" style="padding:8px 0">No active medications.</div>';
+  const notes=(info.notes&&info.notes.length)?info.notes.map(n=>'<div style="padding:12px 0;border-top:1px solid var(--line)"><div class="between" style="margin-bottom:6px"><b>'+esc(n.type)+'</b><span class="tiny muted" style="font-weight:700">'+fmtDate(n.date)+'</span></div><div class="tiny" style="line-height:1.6"><b>A:</b> '+esc(n.a)+'<br><b>P:</b> '+esc(n.p)+'</div></div>').join(''):'<div class="tiny muted">No notes on file.</div>';
+  const vitalTool=id==='maya'?'<div class="card"><b>Record a reading</b><div class="tiny muted" style="font-weight:600;margin-bottom:10px">Adds a point to Maya\u2019s Trends automatically.</div><div class="row" style="gap:10px;flex-wrap:wrap"><select class="inp" id="dr-vital-metric" style="max-width:170px"><option value="weight">Weight (lb)</option><option value="bp">Blood pressure (sys)</option><option value="hr">Resting HR (bpm)</option></select><input class="inp" id="dr-vital-value" placeholder="Value" style="max-width:120px"><button class="btn btn-sage btn-sm" data-action="dr-record-vital">'+icon('plus')+'Add to chart</button></div></div>':'';
+  return head('Patient chart','')+patientBar()+
+    '<div class="grid g2"><div class="card"><div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Snapshot</div><div class="tiny muted" style="font-weight:700">Age '+info.age+' · '+esc(info.vitals)+'</div><div style="margin-top:10px"><b class="tiny">Allergies</b><div>'+info.allergies.map(a=>'<span class="pill danger" style="margin:3px 4px 0 0">'+esc(a)+'</span>').join('')+'</div></div><div style="margin-top:10px"><b class="tiny">Conditions</b><div>'+info.conditions.map(a=>'<span class="pill grey" style="margin:3px 4px 0 0">'+esc(a)+'</span>').join('')+'</div></div></div>'+
+    '<div class="card"><div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Active medications</div>'+meds+'</div></div>'+
+    '<div class="sec-title">Recent notes</div><div class="card">'+notes+'</div>'+(vitalTool?'<div class="sec-title">Add data</div>'+vitalTool:'');
+}
+function dNote(){
+  const id=state.ui.selectedPatientId;const info=dInfo(id);
+  return head('SOAP note','')+patientBar()+
+    '<div class="card"><div class="field"><label>Visit type</label><input class="inp" id="dr-visit-type" placeholder="e.g. Membership check-in" value="Membership check-in"></div>'+
+    '<div class="field"><label>Subjective</label><textarea class="inp" id="dr-s" placeholder="What the patient reports…">Feeling well overall. No new complaints. Sleeping better since starting hydration routine.</textarea></div>'+
+    '<div class="field"><label>Objective</label><textarea class="inp" id="dr-o" placeholder="Exam & measurements…">BP 120/78, HR 61. Exam unremarkable.</textarea></div>'+
+    '<div class="field"><label>Assessment</label><textarea class="inp" id="dr-a" placeholder="Your clinical impression…">Stable; AFib well controlled. Healthy adult.</textarea></div>'+
+    '<div class="field"><label>Plan</label><textarea class="inp" id="dr-p" placeholder="Next steps…">Continue current medications. Recheck INR in 4 weeks. Encouraged step goal.</textarea></div>'+
+    '<button class="btn btn-sage" data-action="dr-save-note">'+icon('check')+'Sign &amp; save note</button>'+(info.live?'<span class="hint" style="margin-left:10px">Appears instantly in Maya\u2019s Records tab.</span>':'')+'</div>';
+}
+function dRx(){
+  const id=state.ui.selectedPatientId;const info=dInfo(id);
+  const common=['Ibuprofen','Amoxicillin','Lisinopril','Atorvastatin','Levothyroxine','Omeprazole','Sertraline','Amlodipine','Prednisone','Azithromycin','Naproxen'];
+  return head('Prescribe','')+patientBar()+
+    '<div class="card"><div class="grid g2"><div class="field"><label>Medication</label><input class="inp" id="dr-rx-name" list="rxlist" value="Ibuprofen"><datalist id="rxlist">'+common.map(c=>'<option value="'+c+'">').join('')+'</datalist></div><div class="field"><label>Dose</label><input class="inp" id="dr-rx-dose" value="400 mg"></div></div>'+
+    '<div class="field"><label>Directions</label><input class="inp" id="dr-rx-freq" value="1 tablet as needed for pain"></div>'+
+    '<div class="grid g2"><div class="field"><label>Quantity (days supply)</label><input class="inp" id="dr-rx-qty" type="number" value="30"></div><div class="field"><label>Pharmacy</label><input class="inp" id="dr-rx-pharm" value="Birch & Main Pharmacy"></div></div>'+
+    '<button class="btn btn-primary" data-action="dr-send-rx">'+icon('send')+'Send prescription</button>'+(info.live?'<div class="hint" style="margin-top:10px">'+icon('info')+' Maya takes warfarin — sending Ibuprofen will trip a bleeding-risk flag on her Medications tab.</div>':'')+'</div>';
+}
+function dWidgets(){
+  const id=state.ui.selectedPatientId;const info=dInfo(id);
+  const cur=id==='maya'?state.patient.widgets:[];
+  const list=cur.length?'<div class="grid g3">'+cur.map(widgetCard).join('')+'</div>':'<div class="tiny muted">No widgets yet.</div>';
+  return head('Widgets','Tailor the patient\u2019s dashboard to your practice and their goals.')+patientBar()+
+    '<div class="card" style="margin-bottom:20px"><b>Add a widget to '+esc(info.name.split(' ')[0])+'\u2019s dashboard</b><div class="grid g2" style="margin-top:12px"><div class="field" style="margin:0"><label>Type</label><select class="inp" id="dr-wid-kind"><option value="heart">BP check-in</option><option value="pill">Medication reminder</option><option value="drop">Hydration goal</option><option value="shoe">Steps goal</option><option value="moon">Sleep goal</option><option value="spark">Mood check-in</option></select></div><div class="field" style="margin:0"><label>Instruction / target</label><input class="inp" id="dr-wid-label" placeholder="e.g. Log BP twice daily"></div></div><button class="btn btn-sage btn-sm" style="margin-top:12px" data-action="dr-add-widget">'+icon('plus')+'Add to dashboard</button>'+(info.live?'<span class="hint" style="margin-left:10px">Shows on Maya\u2019s Home tab.</span>':'')+'</div>'+
+    '<div class="sec-title">Current widgets</div>'+list;
+}
+function dBilling(){
+  const id=state.ui.selectedPatientId;const info=dInfo(id);
+  const cur=id==='maya'?state.patient.billing:[];
+  const list=cur.length?cur.map(b=>'<div class="list-row"><div style="flex:1"><b>'+esc(b.desc)+'</b><div class="tiny muted" style="font-weight:600">Due '+fmtDate(b.due)+'</div></div><b>'+money(b.amount)+'</b><span class="pill '+(b.status==='paid'?'good':'amber')+'">'+esc(b.status)+'</span></div>').join(''):'<div class="tiny muted">No charges yet.</div>';
+  return head('Billing','DPC billing straight out of Vita — no clearinghouse detour.')+patientBar()+
+    '<div class="card" style="margin-bottom:20px"><b>Create a charge</b><div class="row" style="gap:8px;flex-wrap:wrap;margin:10px 0"><button class="btn btn-ghost btn-sm" data-action="dr-bill-quick" data-desc="Vita membership — July" data-amt="99">Membership · $99</button><button class="btn btn-ghost btn-sm" data-action="dr-bill-quick" data-desc="Office visit" data-amt="45">Visit · $45</button><button class="btn btn-ghost btn-sm" data-action="dr-bill-quick" data-desc="Lab panel" data-amt="28">Lab · $28</button></div><div class="grid g2"><div class="field" style="margin:0"><label>Description</label><input class="inp" id="dr-bill-desc" placeholder="What is this for?"></div><div class="field" style="margin:0"><label>Amount ($)</label><input class="inp" id="dr-bill-amt" type="number" placeholder="0.00"></div></div><button class="btn btn-primary btn-sm" style="margin-top:12px" data-action="dr-send-bill">'+icon('send')+'Send charge'+(info.live?' to Maya':'')+'</button></div>'+
+    '<div class="sec-title">Current charges</div><div class="card">'+list+'</div>';
+}
+
+/* ============================ TELEHEALTH OVERLAY ============================ */
+function openTele(id){
+  const info=dInfo(id);const initials=info.name.split(' ').map(x=>x[0]).join('');
+  const meds=(info.meds&&info.meds.length)?info.meds.map(m=>'<div class="tiny" style="padding:4px 0"><b>'+esc(m.name)+' '+esc(m.dose)+'</b> — '+esc(m.schedule)+'</div>').join(''):'<div class="tiny muted">None</div>';
+  $('teleHost').innerHTML='<div class="tele"><div class="tele-top">'+icon('video')+'<b>Telehealth visit</b><span class="tiny" style="opacity:.7">· '+esc(info.name)+' · connected</span><span style="margin-left:auto;font-weight:700;font-size:13px"><span class="dot-i" style="background:#6BD08A;display:inline-block;margin-right:6px"></span>00:04</span></div>'+
+    '<div class="tele-main"><div class="tele-video"><div class="big-av" style="background:'+(avatarColors[id]||'var(--sage)')+'">'+esc(initials)+'</div><div class="self">You · Dr. Reyes</div></div>'+
+    '<div class="tele-chart"><div class="row" style="gap:10px;margin-bottom:12px">'+av(id,initials,40)+'<div><b>'+esc(info.name)+'</b><div class="tiny muted" style="font-weight:600">'+info.mrn+' · age '+info.age+'</div></div></div>'+
+    '<div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin:6px 0 4px">Reason</div><div class="tiny">'+esc(state.panel.find(p=>p.id===id).reason)+'</div>'+
+    '<div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 4px">Allergies</div>'+info.allergies.map(a=>'<span class="pill danger" style="margin:0 4px 4px 0">'+esc(a)+'</span>').join('')+
+    '<div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 4px">Vitals</div><div class="tiny">'+esc(info.vitals)+'</div>'+
+    '<div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 4px">Medications</div>'+meds+'</div></div>'+
+    '<div class="tele-controls"><button aria-label="Mute">'+icon('mic')+'</button><button aria-label="Camera">'+icon('cam')+'</button><button class="end" data-action="tele-end">'+icon('x')+'End visit</button></div></div>';
+}
+
+/* ============================ CARE CIRCLE ============================ */
+function circleMember(id){if(id==='patient')return {name:'Maya Chen',initials:'MC',color:avatarColors.maya};const d=docById(id);return {name:d.name||'Doctor',initials:d.initials||'DR',color:avatarColors[id]||'var(--sage)'};}
+function groupBubbles(list,mineId){
+  return list.map(m=>{const mem=circleMember(m.sender);
+    if(m.sender===mineId)return '<div class="bubble me" style="max-width:80%">'+esc(m.text)+'<span class="t">'+esc(m.time||'')+'</span></div>';
+    return '<div style="display:flex;gap:8px;max-width:84%;align-self:flex-start"><span class="av" style="width:28px;height:28px;font-size:11px;background:'+mem.color+';flex:none;margin-top:2px">'+esc(mem.initials)+'</span><div class="bubble them" style="max-width:none"><span style="font-weight:800;font-size:11.5px;color:'+mem.color+';display:block;margin-bottom:2px">'+esc(mem.name)+'</span>'+esc(m.text)+'<span class="t">'+esc(m.time||'')+'</span></div></div>';
+  }).join('');
+}
+function memberChips(){return '<div class="row" style="flex-wrap:wrap;gap:8px;margin-bottom:16px">'+[{id:'patient'},...state.patient.doctors].map(x=>{const m=circleMember(x.id);return '<span class="pill grey" style="padding-left:4px">'+av(x.id,m.initials,22)+esc(m.name)+'</span>';}).join('')+'</div>';}
+function pCircle(){
+  const c=state.patient.careCircle;
+  if(!c.open){
+    return head('Care Circle','A private space where your whole care team can coordinate — but only when you open it.')+
+      '<div class="card pad-lg" style="text-align:center"><span style="width:56px;height:56px;border-radius:18px;background:var(--sage-soft);color:var(--sage);display:grid;place-items:center;margin:6px auto 14px">'+icon('ring')+'</span><h3 style="font-family:var(--display);font-weight:500;font-size:22px">Your care circle is closed</h3><p class="muted" style="max-width:440px;margin:8px auto 0">Open it and Dr. Reyes, Dr. Lindqvist, and Dr. Anand can discuss your care together in one thread. You see everything they say, and can chime in. Close it anytime and they can no longer post.</p><button class="btn btn-sage" style="margin-top:18px" data-action="circle-open">'+icon('ring')+'Open care circle</button></div>';
+  }
+  return head('Care Circle','Your care team is coordinating here. You can see everything and join in.')+memberChips()+
+    '<div class="msg-wrap" style="grid-template-columns:1fr"><div class="msg-panel"><div class="msg-head" style="justify-content:space-between">'+
+    '<div class="row" style="gap:8px"><span style="color:var(--sage)">'+icon('ring')+'</span><b>Maya\u2019s Care Circle</b><span class="pill good" style="font-size:10.5px">Open</span></div><button class="btn-quiet btn-sm" data-action="circle-close">Close circle</button></div>'+
+    '<div class="msg-body">'+groupBubbles(c.messages,'patient')+'</div>'+
+    '<div class="msg-compose"><input class="inp" id="pt-circle-input" placeholder="Add to the conversation…"><button class="btn btn-primary" data-action="pt-circle-send">'+icon('send')+'</button></div></div></div>';
+}
+function dCircle(){
+  const id=state.ui.selectedPatientId;const c=state.patient.careCircle;
+  const bar=patientBar();
+  if(id!=='maya')return head('Care Circle','')+bar+'<div class="empty">'+icon('ring')+'<div>No shared care circle for this patient yet.</div></div>';
+  if(!c.open)return head('Care Circle','')+bar+'<div class="card pad-lg" style="text-align:center"><span style="width:52px;height:52px;border-radius:16px;background:var(--surface-2);color:var(--ink-3);display:grid;place-items:center;margin:4px auto 12px">'+icon('ring')+'</span><b style="font-size:17px">Maya hasn\u2019t opened her care circle</b><p class="muted" style="margin:8px auto 0;max-width:420px">Once she opens it, you\u2019ll be able to coordinate here with her cardiologist and dermatologist. Patients control access to protect their privacy.</p></div>';
+  return head('Care Circle','')+bar+memberChips()+
+    '<div class="msg-wrap" style="grid-template-columns:1fr"><div class="msg-panel"><div class="msg-head"><span style="color:var(--sage)">'+icon('ring')+'</span><b>Maya\u2019s Care Circle</b><span class="doc-badge" style="margin-left:auto">'+icon('spark')+'You post as Dr. Reyes · Maya sees all</span></div>'+
+    '<div class="msg-body">'+groupBubbles(c.messages,'reyes')+'</div>'+
+    '<div class="msg-compose"><input class="inp" id="dr-circle-input" placeholder="Coordinate with the care team…"><button class="btn btn-sage" data-action="dr-circle-send">'+icon('send')+'</button></div></div></div>';
+}
+
+/* ============================ CONNECTIONS ============================ */
+function pearson(a,b){const n=Math.min(a.length,b.length);let sx=0,sy=0,sxy=0,sx2=0,sy2=0;for(let i=0;i<n;i++){const x=a[i].v,y=b[i].v;sx+=x;sy+=y;sxy+=x*y;sx2+=x*x;sy2+=y*y;}const den=Math.sqrt((n*sx2-sx*sx)*(n*sy2-sy*sy));return den?(n*sxy-sx*sy)/den:0;}
+function strengthLabel(r){const a=Math.abs(r);return a>=0.7?'strong':a>=0.4?'moderate':'weak';}
+function connChart(a,b,ca,cb){
+  const w=560,h=160,L=14,R=14,T=14,B=26;const norm=arr=>{const vs=arr.map(x=>x.v);const mn=Math.min(...vs),mx=Math.max(...vs);return arr.map(x=>({t:x.d||x.t,n:(x.v-mn)/((mx-mn)||1)}));};
+  const A=norm(a),Bn=norm(b);const n=A.length;const X=i=>L+i*(w-L-R)/((n-1)||1);const Y=v=>T+(1-v)*(h-T-B);
+  const line=(pts,col)=>{let d='';pts.forEach((p,i)=>d+=(i?'L':'M')+X(i)+' '+Y(p.n)+' ');let dots='';pts.forEach((p,i)=>dots+='<circle cx="'+X(i)+'" cy="'+Y(p.n)+'" r="3.4" fill="var(--surface)" stroke="'+col+'" stroke-width="2.3"/>');return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'+dots;};
+  let xl='';A.forEach((p,i)=>xl+='<text x="'+X(i)+'" y="'+(h-8)+'" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--ink-2)">'+esc(p.t)+'</text>');
+  return '<div class="chart-wrap"><svg viewBox="0 0 '+w+' '+h+'" role="img">'+line(A,ca)+line(Bn,cb)+xl+'</svg></div>';
+}
+function connCard(inner){return '<div class="card" style="margin-bottom:16px">'+inner+'</div>';}
+function pConnections(){
+  const p=state.patient;
+  const rMS=pearson(p.habits.meditation,p.habits.sleep);
+  const medSleep=connCard('<div class="between" style="margin-bottom:10px"><div class="row" style="gap:8px"><span style="width:32px;height:32px;border-radius:9px;background:var(--lav-soft);color:var(--lav);display:grid;place-items:center">'+icon('link')+'</span><b>Meditation &amp; sleep</b></div><span class="pill '+(rMS>=0.4?'good':'grey')+'">'+strengthLabel(rMS)+' positive link (r = '+rMS.toFixed(2)+')</span></div>'+
+    '<p class="muted" style="margin:0 0 12px">On the days you meditate more, you tend to sleep longer. This past week your longest sleep followed your longest sessions.</p>'+connChart(p.habits.meditation,p.habits.sleep,'var(--lav)','#5C7CB8')+
+    '<div class="row" style="gap:16px;justify-content:center;margin-top:6px"><span class="tiny muted" style="font-weight:700"><span class="dot-i" style="background:var(--lav);display:inline-block;margin-right:5px"></span>Meditation (min)</span><span class="tiny muted" style="font-weight:700"><span class="dot-i" style="background:#5C7CB8;display:inline-block;margin-right:5px"></span>Sleep (hrs)</span></div>'+
+    '<div class="row" style="gap:8px;margin-top:14px"><button class="btn btn-primary btn-sm" data-action="conn-send" data-msg="Vita noticed a pattern: on days I meditate more, I sleep longer (this week the link was strong). Wanted to share in case it\u2019s useful.">'+icon('send')+'Send to Dr. Reyes</button>'+(p.careCircle.open?'<button class="btn btn-ghost btn-sm" data-action="conn-circle" data-msg="Sharing a pattern from my log: more meditation lines up with longer sleep.">Share to Care Circle</button>':'')+'</div>');
+  const rSH=pearson(p.trends.steps.pts,p.trends.hr.pts.map(x=>({v:-x.v})));
+  const stepHr=connCard('<div class="between" style="margin-bottom:10px"><div class="row" style="gap:8px"><span style="width:32px;height:32px;border-radius:9px;background:var(--sage-soft);color:var(--sage);display:grid;place-items:center">'+icon('link')+'</span><b>Daily steps &amp; resting heart rate</b></div><span class="pill good">'+strengthLabel(rSH)+' link</span></div><p class="muted" style="margin:0">As your average daily steps climbed this year, your resting heart rate drifted down — a sign your cardio fitness is trending the right way.</p>'+
+    '<div class="row" style="gap:8px;margin-top:14px"><button class="btn btn-primary btn-sm" data-action="conn-send" data-msg="My resting heart rate has been dropping as my daily steps go up over the last few months. Thought you\u2019d want to see the trend.">'+icon('send')+'Send to Dr. Reyes</button></div>');
+  const flags=checkInteractions();
+  const safety=flags.length?'<div class="sec-title">Safety connections</div>'+flags.map(f=>connCard('<div class="between" style="margin-bottom:8px"><div class="row" style="gap:8px"><span style="width:32px;height:32px;border-radius:9px;background:'+(f.sev==='high'?'var(--danger-soft);color:var(--danger)':'var(--amber-soft);color:#B4741A')+';display:grid;place-items:center">'+icon('link')+'</span><b>'+esc(f.a)+' + '+esc(f.b)+'</b></div><span class="pill '+(f.sev==='high'?'danger':'amber')+'">'+f.sev+' risk</span></div><p class="muted" style="margin:0">'+esc(f.note)+' Vita spotted this across your medications, supplements, and TCM entries.</p><div class="row" style="gap:8px;margin-top:14px"><button class="btn btn-primary btn-sm" data-action="conn-send" data-msg="Vita flagged a possible interaction: '+esc(f.a)+' + '+esc(f.b)+' — '+esc(f.note)+' Should I change anything?">'+icon('send')+'Send to Dr. Reyes</button>'+(state.patient.careCircle.open?'<button class="btn btn-ghost btn-sm" data-action="conn-circle" data-msg="Vita flagged '+esc(f.a)+' + '+esc(f.b)+' ('+esc(f.note)+'). Flagging for the team.">Share to Care Circle</button>':'')+'</div>')).join(''):'';
+  return head('Connections','Patterns Vita finds across your data — and can pass along to your doctor.')+
+    '<div class="sec-title">Habit patterns</div>'+medSleep+stepHr+safety;
+}
+
+/* ============================ EMERGENCY ============================ */
+function pEmergency(){
+  const p=state.patient;
+  const contacts=p.emergencyContacts.map(c=>'<div class="list-row"><span style="width:34px;height:34px;border-radius:10px;background:var(--danger-soft);color:var(--danger);display:grid;place-items:center;flex:none">'+icon('user')+'</span><div style="flex:1"><b>'+esc(c.name)+'</b><div class="tiny muted" style="font-weight:600">'+esc(c.relation)+' · '+esc(c.phone)+'</div></div><button class="btn-quiet btn-sm" data-action="remove-econtact" data-id="'+c.id+'">'+icon('x')+'</button></div>').join('');
+  const addForm=state.ui.showAddEC?'<div style="margin-top:12px" class="grid g3"><div class="field" style="margin:0"><input class="inp" id="ec-name" placeholder="Name"></div><div class="field" style="margin:0"><input class="inp" id="ec-relation" placeholder="Relation"></div><div class="field" style="margin:0"><input class="inp" id="ec-phone" placeholder="Phone"></div><div class="row" style="grid-column:1/-1"><button class="btn btn-primary btn-sm" data-action="add-econtact">Add contact</button><button class="btn btn-quiet btn-sm" data-action="toggle-addec">Cancel</button></div></div>':'<button class="btn btn-ghost btn-sm" style="margin-top:12px" data-action="toggle-addec">'+icon('plus')+'Add emergency contact</button>';
+  const shared='<div class="card"><div class="tiny muted" style="font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">What an emergency responder sees</div><div class="stack" style="gap:8px">'+
+    ['Name, age & blood type','Critical warnings (blood thinner)','Allergies','Active medications','Conditions','Primary doctor & emergency contacts'].map(x=>'<div class="row" style="gap:8px"><span style="color:var(--good)">'+icon('check')+'</span><span>'+x+'</span></div>').join('')+'</div></div>';
+  return head('Emergency','A pared-down card a trusted person or first responder can pull up if you can\u2019t.')+
+    '<div class="card" style="background:linear-gradient(120deg,var(--danger-soft),#FBE8E2);border-color:#F3C9BF;margin-bottom:20px"><div class="between" style="flex-wrap:wrap;gap:12px"><div class="row" style="gap:12px"><span style="width:44px;height:44px;border-radius:12px;background:var(--danger);color:#fff;display:grid;place-items:center">'+icon('cross')+'</span><div><b style="font-size:17px">Emergency access is on</b><div class="tiny muted" style="font-weight:600">Blood type '+esc(p.bloodType)+' · '+(p.organDonor?'Organ donor':'Not a donor')+'</div></div></div><div class="row" style="gap:8px"><button class="btn btn-ghost btn-sm" data-action="emergency-copy">'+icon('link')+'Copy access link</button><button class="btn" style="background:var(--danger);color:#fff" data-action="emergency-open">'+icon('shield')+'Open emergency card</button></div></div></div>'+
+    '<div class="sec-title">Emergency contacts</div><div class="card">'+contacts+addForm+'</div>'+
+    '<div class="sec-title">Shared information</div>'+shared;
+}
+function openEmergency(){
+  const p=state.patient;const w=p.criticalWarning;
+  const meds=p.meds.map(m=>'<div style="padding:5px 0;border-top:1px solid rgba(255,255,255,.14)"><b>'+esc(m.name)+' '+esc(m.dose)+'</b> — '+esc(m.schedule)+'</div>').join('');
+  const contacts=p.emergencyContacts.map(c=>'<div class="between" style="padding:8px 0;border-top:1px solid rgba(255,255,255,.14)"><div><b>'+esc(c.name)+'</b><div style="opacity:.75;font-size:12.5px">'+esc(c.relation)+'</div></div><button class="btn btn-sm" style="background:rgba(255,255,255,.16);color:#fff" data-action="call-mock" data-name="'+esc(c.name)+'">'+icon('phone')+esc(c.phone)+'</button></div>').join('');
+  const sec=(t,b)=>'<div style="margin-top:16px"><div style="font-size:11px;font-weight:800;letter-spacing:1px;opacity:.7;text-transform:uppercase;margin-bottom:6px">'+t+'</div>'+b+'</div>';
+  $('teleHost').innerHTML='<div class="tele" style="background:#3a1512;overflow-y:auto"><div style="max-width:560px;margin:0 auto;width:100%;padding:22px 20px 40px;color:#fff">'+
+    '<div class="between"><div class="row" style="gap:10px"><span style="width:38px;height:38px;border-radius:11px;background:var(--danger);display:grid;place-items:center">'+icon('cross')+'</span><b style="font-size:18px;letter-spacing:.5px">EMERGENCY MEDICAL INFO</b></div><button class="btn-quiet" style="color:#fff" data-action="emergency-close">'+icon('x')+'</button></div>'+
+    '<div style="margin-top:20px;display:flex;align-items:center;gap:16px">'+av('maya','MC',60)+'<div><div style="font-family:var(--display);font-size:28px;font-weight:500">'+esc(p.name)+'</div><div style="opacity:.8">Age '+p.age+' · DOB '+fmtDate(p.dob)+'</div></div><div style="margin-left:auto;text-align:right"><div style="font-size:11px;opacity:.7;font-weight:800;letter-spacing:1px">BLOOD</div><div style="font-family:var(--display);font-size:26px;font-weight:600">'+esc(p.bloodType.split(' ')[0])+'</div></div></div>'+
+    '<div style="margin-top:18px;background:var(--danger);border-radius:14px;padding:14px 16px;display:flex;gap:10px"><span style="flex:none;margin-top:1px">'+icon('bell')+'</span><div><b>Critical warning</b><div style="font-size:13.5px;margin-top:2px">'+esc(w)+'</div></div></div>'+
+    sec('Allergies',p.allergies.map(a=>'<span class="pill" style="background:rgba(255,255,255,.16);color:#fff;margin:0 6px 6px 0;font-size:13px">'+esc(a)+'</span>').join(''))+
+    sec('Conditions',p.conditions.map(a=>'<span class="pill" style="background:rgba(255,255,255,.16);color:#fff;margin:0 6px 6px 0;font-size:13px">'+esc(a)+'</span>').join(''))+
+    sec('Current medications',meds)+
+    sec('Emergency contacts',contacts)+
+    sec('Care',(p.organDonor?'Registered organ donor. ':'')+'Primary care: Dr. Marisol Reyes (Cedar Direct Care).')+
+    '<div style="opacity:.6;font-size:11.5px;margin-top:22px;text-align:center">Shown to first responders and your emergency contacts · Provided by Vita</div></div></div>';
+}
+
+/* ============================ ACTIONS ============================ */
+function handle(action,el){
+  const p=state.patient;const d=el.dataset;
+  switch(action){
+    case 'set-view':state.ui.view=d.view;render();break;
+    case 'p-nav':state.ui.patientTab=d.tab;state.badges[d.tab]=0;render();break;
+    case 'd-nav':state.ui.doctorTab=d.tab;render();break;
+    case 'dismiss-banner-p':state.ui.bannerP=false;render();break;
+    case 'dismiss-banner-d':state.ui.bannerD=false;render();break;
+    /* patient messaging */
+    case 'pt-open-thread':state.ui.msgThread=d.thread;render();break;
+    case 'pt-send':{const v=($('pt-msg-input').value||'').trim();if(!v)break;p.messages[state.ui.msgThread].push({sender:'patient',text:v,time:now()});render();break;}
+    /* widgets */
+    case 'pt-add-widget':{const k=$('pt-w-kind').value;const l=($('pt-w-label').value||'').trim();if(!l){toast('Give your widget a label');break;}const titles={drop:'Hydration',shoe:'Steps goal',moon:'Sleep goal',heart:'BP check-in',clock:'Fasting timer'};p.widgets.push({id:uid('w'),kind:k,title:titles[k]||'Widget',by:'You',value:l,sub:'Tracking'});toast('Widget added','On your dashboard');render();break;}
+    case 'pt-remove-widget':p.widgets=p.widgets.filter(w=>w.id!==d.id);render();break;
+    /* meds */
+    case 'pt-refill':{const m=p.meds.find(x=>x.id===d.id);if(m){m.refilling=true;m.daysLeft=m.supply;toast('Refill requested',p.pharmacy.name);render();}break;}
+    case 'pt-toggle-addmed':state.ui.showAddMed=!state.ui.showAddMed;render();break;
+    case 'pt-add-med':{const n=($('pt-med-name').value||'').trim();if(!n){toast('Enter a medication name');break;}const qty=30;p.meds.push({id:uid('m'),name:n,dose:($('pt-med-dose').value||'').trim(),schedule:($('pt-med-sched').value||'as directed').trim(),prescriber:'Self-added (OTC)',reason:'Personal',supply:qty,daysLeft:qty,self:true,refilling:false});state.ui.showAddMed=false;const f=checkInteractions();if(f.length&&(f[0].a===n||f[0].b===n))toast('Heads up — possible interaction','Check the flag above','warn');else toast('Medication added');render();break;}
+    /* billing */
+    case 'pt-pay':{const b=p.billing.find(x=>x.id===d.id);if(b){b.status='paid';toast('Payment sent',money(b.amount)+' · '+p.payment);render();}break;}
+    /* documents */
+    case 'doc-view':{const doc=p.documents.find(x=>x.id===d.id);openModal('<button class="close btn-quiet" data-action="modal-close">'+icon('x')+'</button><h3>'+esc(doc.name)+'</h3><p class="muted tiny" style="font-weight:600">'+esc(doc.type)+' · '+fmtDate(doc.date)+' · '+esc(doc.source)+'</p><div class="card" style="margin-top:14px;background:var(--surface-2);font-family:monospace;font-size:12px;line-height:1.8">'+esc(doc.name)+'\n————————————\nResult: Within normal limits\nReviewed by '+esc(doc.source)+'\n\n(Demo preview — real file would render here.)</div><button class="btn btn-ghost btn-sm" style="margin-top:14px" data-action="modal-close">Close</button>');break;}
+    case 'doc-download':{const doc=p.documents.find(x=>x.id===d.id);toast('Downloaded',doc.name+'.pdf');break;}
+    case 'doc-share':{const doc=p.documents.find(x=>x.id===d.id);openModal('<button class="close btn-quiet" data-action="modal-close">'+icon('x')+'</button><h3>Send document</h3><p class="muted tiny" style="font-weight:600">Sending <b>'+esc(doc.name)+'</b> to any provider — even one not on Vita.</p><div class="field" style="margin-top:14px"><label>Provider email or fax</label><input class="inp" id="share-to" placeholder="clinic@example.com"></div><button class="btn btn-sage" data-action="doc-share-send" data-id="'+doc.id+'">'+icon('send')+'Send securely</button>');break;}
+    case 'doc-share-send':{const to=($('share-to').value||'').trim();closeModal();toast('Document sent',to?('To '+to):'Securely delivered');break;}
+    case 'doc-upload':openModal('<button class="close btn-quiet" data-action="modal-close">'+icon('x')+'</button><h3>Upload document</h3><div class="field" style="margin-top:12px"><label>Document name</label><input class="inp" id="up-name" placeholder="e.g. Vaccination card"></div><div class="field"><label>Type</label><select class="inp" id="up-type"><option>Lab result</option><option>Imaging</option><option>Immunization</option><option>Other</option></select></div><button class="btn btn-primary" data-action="doc-upload-save">'+icon('dl')+'Save to Documents</button>');break;
+    case 'doc-upload-save':{const n=($('up-name').value||'').trim();if(!n){toast('Name the document');break;}p.documents.unshift({id:uid('d'),name:n,type:$('up-type').value,date:new Date().toISOString().slice(0,10),source:'Uploaded by you'});closeModal();toast('Document saved');render();break;}
+    /* trends */
+    case 'trend-metric':state.ui.trendMetric=d.metric;render();break;
+    case 'pt-add-reading':{const val=parseFloat($('pt-reading').value);if(isNaN(val)){toast('Enter a number');break;}const T=p.trends[state.ui.trendMetric];T.pts.push({t:'Now',v:val,v2:state.ui.trendMetric==='bp'?Math.round(val*0.64):undefined,src:'manual'});toast('Reading added','Chart updated');render();break;}
+    /* supplements */
+    case 'supp-research':{const q=($('pt-supp-search').value||'').trim().toLowerCase();state.ui.suppSearched=true;let hit=null;for(const k in SUPP_DB){if(k.includes(q)||q.includes(k.split(' ')[0])){hit=Object.assign({name:$('pt-supp-search').value.trim()},SUPP_DB[k]);break;}}state.ui.suppResult=hit;render();break;}
+    case 'pt-toggle-addsupp':state.ui.showAddSupp=!state.ui.showAddSupp;render();break;
+    case 'pt-add-supp':{const n=($('pt-supp-name').value||'').trim();if(!n){toast('Enter a supplement');break;}p.supplements.push({id:uid('s'),name:n,dose:($('pt-supp-dose').value||'as directed').trim(),purpose:'Personal'});state.ui.showAddSupp=false;const f=checkInteractions();if(f.some(x=>x.a===n||x.b===n))toast('Possible interaction found','See the flag above','warn');else toast('Supplement added');render();break;}
+    case 'pt-remove-supp':p.supplements=p.supplements.filter(s=>s.id!==d.id);render();break;
+    /* AI */
+    case 'ai-send':{const v=($('pt-ai-input').value||'').trim();if(!v)break;p.aiChat.push({sender:'user',text:v});p.aiChat.push({sender:'ai',text:botReply(v)});render();break;}
+    case 'ai-chip':{p.aiChat.push({sender:'user',text:d.q});p.aiChat.push({sender:'ai',text:botReply(d.q)});render();break;}
+    /* schedule */
+    case 'book-pick':state.ui.bookOpen=state.ui.bookOpen===d.id?null:d.id;render();break;
+    case 'book-slot':{const doc=DIRECTORY.find(x=>x.id===d.id);p.appts.push({id:uid('a'),doctorId:doc.id,doctor:doc.name,type:(p.doctors.some(x=>x.id===doc.id)?'Follow-up visit':'First-time visit'),date:'2026-06-'+(8+Math.floor(Math.random()*6)),time:d.slot.split('· ')[1]||'10:00 AM',mode:'In-person'});state.ui.bookOpen=null;toast('Visit booked','With '+doc.name);render();break;}
+    case 'appt-cancel':p.appts=p.appts.filter(a=>a.id!==d.id);toast('Visit cancelled');render();break;
+    /* ===== DOCTOR ===== */
+    case 'dr-select-patient':state.ui.selectedPatientId=$('dr-patient-select').value;render();break;
+    case 'dr-open-chart':state.ui.selectedPatientId=d.id;state.ui.doctorTab='chart';render();break;
+    case 'dr-open-thread':state.ui.drThread=d.id;render();break;
+    case 'dr-send-msg':{const v=($('dr-msg-input').value||'').trim();if(!v)break;const id=state.ui.drThread;const th=id==='maya'?p.messages.reyes:state.drThreads[id];th.push({sender:'doctor',text:v,time:now()});if(id==='maya'){bump('messages');toast('Message sent to Maya','Now in her Vita inbox','sync');}else toast('Message sent');render();break;}
+    case 'dr-start-tele':openTele(d.id);break;
+    case 'tele-end':$('teleHost').innerHTML='';toast('Visit ended');break;
+    case 'dr-save-note':{const id=state.ui.selectedPatientId;const note={type:($('dr-visit-type').value||'Visit').trim(),s:$('dr-s').value.trim(),o:$('dr-o').value.trim(),a:$('dr-a').value.trim(),pp:$('dr-p').value.trim(),date:new Date().toISOString().slice(0,10),doctor:'Dr. Marisol Reyes'};if(id==='maya'){p.notes.unshift({id:uid('n'),doctorId:'reyes',doctor:'Dr. Marisol Reyes',date:note.date,type:note.type,s:note.s,o:note.o,a:note.a,p:note.pp});bump('records');toast('Note signed','Now in Maya\u2019s Records','sync');}else{DPATIENTS[id].notes.unshift({doctor:'Dr. Marisol Reyes',date:note.date,type:note.type,s:note.s,o:note.o,a:note.a,p:note.pp});toast('Note signed');}render();break;}
+    case 'dr-send-rx':{const id=state.ui.selectedPatientId;const name=($('dr-rx-name').value||'').trim();if(!name){toast('Enter a medication');break;}const qty=parseInt($('dr-rx-qty').value)||30;const med={id:uid('m'),name:name,dose:($('dr-rx-dose').value||'').trim(),schedule:($('dr-rx-freq').value||'as directed').trim(),prescriber:'Dr. Marisol Reyes',reason:'As prescribed',supply:qty,daysLeft:qty,self:false,refilling:false};if(id==='maya'){p.meds.push(med);bump('medications');const f=checkInteractions();const inv=f.find(x=>x.a===name||x.b===name);if(inv)toast('Sent — interaction flagged','Maya sees '+inv.sev+' warning','warn');else toast('Prescription sent to Maya','In her Medications tab','sync');}else toast('Prescription sent');render();break;}
+    case 'dr-add-widget':{const id=state.ui.selectedPatientId;const k=$('dr-wid-kind').value;const l=($('dr-wid-label').value||'').trim();if(!l){toast('Add an instruction');break;}const titles={heart:'BP check-in',pill:'Med reminder',drop:'Hydration',shoe:'Steps goal',moon:'Sleep goal',spark:'Mood check-in'};if(id==='maya'){p.widgets.push({id:uid('w'),kind:k,title:titles[k],by:'Dr. Reyes',value:l,sub:'From your doctor'});bump('home');toast('Widget added to Maya','On her Home tab','sync');}else toast('Widget added');render();break;}
+    case 'dr-bill-quick':{$('dr-bill-desc').value=d.desc;$('dr-bill-amt').value=d.amt;break;}
+    case 'dr-send-bill':{const id=state.ui.selectedPatientId;const desc=($('dr-bill-desc').value||'').trim();const amt=parseFloat($('dr-bill-amt').value);if(!desc||isNaN(amt)){toast('Add a description and amount');break;}if(id==='maya'){p.billing.unshift({id:uid('b'),desc:desc,doctor:'Dr. Marisol Reyes',amount:amt,due:'2026-07-01',status:'due'});bump('billing');toast('Charge sent to Maya',money(amt)+' · in her Billing tab','sync');}else toast('Charge created');render();break;}
+    case 'dr-record-vital':{const m=$('dr-vital-metric').value;const val=parseFloat($('dr-vital-value').value);if(isNaN(val)){toast('Enter a value');break;}const T=p.trends[m];T.pts.push({t:'Now',v:val,v2:m==='bp'?Math.round(val*0.64):undefined,src:'ehr'});bump('trends');toast('Reading added to chart','Plotted on Maya\u2019s Trends','sync');render();break;}
+    /* care circle */
+    case 'circle-open':{const c=p.careCircle;c.open=true;if(!c.messages.length)c.messages.push({sender:'reyes',text:'Team — Maya\u2019s lipid panel and INR both look good. I\u2019m renewing warfarin at the same dose.',time:'9:02 AM'},{sender:'lindqvist',text:'Agreed, 2.4 is right in range. No changes from cardiology.',time:'9:14 AM'},{sender:'anand',text:'No dermatology concerns. Her skin check is booked for June 12.',time:'9:20 AM'});toast('Care circle opened','Your team can coordinate now');render();break;}
+    case 'circle-close':p.careCircle.open=false;toast('Care circle closed','Doctors can no longer post');render();break;
+    case 'pt-circle-send':{const v=($('pt-circle-input').value||'').trim();if(!v)break;p.careCircle.messages.push({sender:'patient',text:v,time:now()});render();break;}
+    case 'dr-circle-send':{const v=($('dr-circle-input').value||'').trim();if(!v)break;p.careCircle.messages.push({sender:'reyes',text:v,time:now()});bump('circle');toast('Posted to Maya\u2019s care circle','She and the team see it','sync');render();break;}
+    /* tcm + daily log */
+    case 'toggle-addtcm':state.ui.showAddTcm=!state.ui.showAddTcm;render();break;
+    case 'add-tcm':{const n=($('tcm-name').value||'').trim();if(!n){toast('Enter a name');break;}const k=$('tcm-kind').value;p.tcm.push({id:uid('t'),name:n,kind:k,detail:($('tcm-detail').value||'').trim()||(k==='herb'?'As directed':'As scheduled')});state.ui.showAddTcm=false;const f=checkInteractions();if(k==='herb'&&f.some(x=>x.a===n||x.b===n))toast('Possible interaction found','See the flag above','warn');else toast('Added to TCM log');render();break;}
+    case 'remove-tcm':p.tcm=p.tcm.filter(t=>t.id!==d.id);render();break;
+    case 'pt-log-daily':{const type=$('log-type').value;const val=($('log-value').value||'').trim();if(!val){toast('Enter a value');break;}const icons={Meditation:'lotus',Sleep:'moon',Exercise:'shoe',Water:'drop',Mood:'heart'};const units={Meditation:' min',Sleep:' hrs',Water:' cups'};p.dailyLog.unshift({id:uid('l'),date:'Today',type:type,value:val+(units[type]||''),icon:icons[type]||'spark'});const num=parseFloat(val);if(type==='Meditation'&&!isNaN(num))p.habits.meditation.push({d:'Today',v:num});if(type==='Sleep'&&!isNaN(num))p.habits.sleep.push({d:'Today',v:num});toast(type+' logged',(type==='Meditation'||type==='Sleep')?'Connections updated':'');render();break;}
+    /* connections */
+    case 'conn-send':{p.messages.reyes.push({sender:'patient',text:d.msg,time:now()});toast('Sent to Dr. Reyes','Now in your Messages');render();break;}
+    case 'conn-circle':{if(!p.careCircle.open){toast('Open your care circle first');break;}p.careCircle.messages.push({sender:'patient',text:d.msg,time:now()});bump('circle');toast('Shared to Care Circle');render();break;}
+    /* emergency */
+    case 'toggle-addec':state.ui.showAddEC=!state.ui.showAddEC;render();break;
+    case 'add-econtact':{const n=($('ec-name').value||'').trim();if(!n){toast('Enter a name');break;}p.emergencyContacts.push({id:uid('ec'),name:n,relation:($('ec-relation').value||'Contact').trim(),phone:($('ec-phone').value||'').trim()});state.ui.showAddEC=false;toast('Contact added');render();break;}
+    case 'remove-econtact':p.emergencyContacts=p.emergencyContacts.filter(c=>c.id!==d.id);render();break;
+    case 'emergency-open':openEmergency();break;
+    case 'emergency-close':$('teleHost').innerHTML='';break;
+    case 'emergency-copy':toast('Access link copied','Share it with a trusted person');break;
+    case 'call-mock':toast('Calling '+(d.name||'contact')+'…');break;
+    case 'modal-close':closeModal();break;
+  }
+}
+document.addEventListener('click',e=>{const el=e.target.closest('[data-action]');if(!el)return;if(el.dataset.action==='dr-select-patient')return;if(el.dataset.action==='modal-back'){if(e.target.classList.contains('modal-back'))closeModal();return;}handle(el.dataset.action,el);});
+document.addEventListener('change',e=>{const el=e.target.closest('[data-action]');if(el&&el.dataset.action==='dr-select-patient')handle('dr-select-patient',el);});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;const id=e.target.id;
+  const map={'pt-msg-input':'pt-send','dr-msg-input':'dr-send-msg','pt-ai-input':'ai-send','pt-supp-search':'supp-research','pt-reading':'pt-add-reading','pt-circle-input':'pt-circle-send','dr-circle-input':'dr-circle-send','log-value':'pt-log-daily','pt-doc-search':null};
+  if(id==='pt-doc-search'){state.ui.bookQuery=e.target.value;render();return;}
+  if(id in map&&map[id]){e.preventDefault();handle(map[id],e.target);}
+});
+document.addEventListener('input',e=>{if(e.target.id==='pt-doc-search'){state.ui.bookQuery=e.target.value;}});
+
+/* ============================ INIT ============================ */
+$('brandDot').innerHTML=icon('heart');
+$('ic-user').innerHTML=icon('user');
+$('ic-steth').innerHTML=icon('steth');
+render();
+</script>
+</body>
+</html>
